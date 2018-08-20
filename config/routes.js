@@ -40,67 +40,18 @@ module.exports.routes = {
     controller: 'IndexController'
   },
 
-  '/gene_diag': {
-    controller: 'IndexController',
-    action: 'geneDiag'
-  },
-
-    '/syn_diag': {
-        controller: 'IndexController',
-        action: 'synDiag'
-    },
-
-    '/VCF-Server': {
-        controller: 'IndexController',
-        action: 'VCFServer'
-    },
-
    '/vcf_viewer': {
      controller: 'IndexController',
      action: 'VCFViewer'
     },
 
 
-  '/list': {
-    controller: 'IndexController',
-    action: 'list'
-  },
-
-    '/geneDiagList': {
-        controller: 'IndexController',
-        action: 'geneDiagList'
-    },
-
-    '/synDiagList': {
-        controller: 'IndexController',
-        action: 'synDiagList'
-    },
-
-    //类似“:id”是一种传参手段，例如/disease/123这一URL的“123”部分可以在控制器中取得
-  '/disease/:id': {
-    controller: 'IndexController',
-    action: 'detail'
-  },
-
-  '/gene/:id': {
-    controller: 'IndexController',
-    action: 'gene'
-  },
-
     //api用于请求后台数据
     '/api/:id': {
         controller: 'IndexController',
         action: 'api'
     },
-  '/randompng': {
-    controller: 'IndexController',
-    action: 'randompng'
-  },
 
-  '/signUp': {
-    controller: 'IndexController',
-    action: 'signUp'
-  },
     '/checkExists':{
       controller:'IndexController',
         action:'checkExists'
@@ -116,78 +67,9 @@ module.exports.routes = {
       action: 'signIn'
   },
 
-  '/database': {
-      controller: 'IndexController',
-      action: 'database'
-  },
-    '/fandq': {
-        controller: 'IndexController',
-        action: 'fandq'
-    },
     '/pdf_reader': {
         controller: 'IndexController',
         action: 'pdf_reader'
-    },
-    '/watch_case/:id': {
-      controller: 'IndexController',
-      action: 'watchCase'
-  },
-
-  '/searchCase': {
-      controller: 'IndexController',
-      action: 'searchCase'
-  },
-
-  '/request_view': {
-      controller: 'IndexController',
-      action: 'requestView'
-  },
-
-    '/my_request': {
-        controller: 'IndexController',
-        action: 'myRequest'
-    },
-
-    '/approve_request' : {
-        controller: 'IndexController',
-        action: 'approveRequest'
-    },
-
-
-    '/change_permission' : {
-        controller: 'IndexController',
-        action: 'changePermission'
-    },
-
-
-    '/verify' : {
-        controller: 'IndexController',
-        action: 'verify'
-    },
-
-    '/new_case' : {
-        controller: 'IndexController',
-        action: 'newCase'
-    },
-
-    '/add_case' : {
-        controller: 'IndexController',
-        action: 'addCase'
-    },
-
-    '/case_picture/:id' : {
-        controller: 'IndexController',
-        action: 'casePicture'
-    },
-
-    '/new_password' : {
-        controller: 'IndexController',
-        action: 'newPassword'
-    },
-
-    '/emailVerify' : {
-        controller: 'IndexController',
-        action: 'emailVerify'
     },
 
     //显示服务器文件
@@ -208,11 +90,7 @@ module.exports.routes = {
         controller: 'IndexController',
         action: 'fileUpload'
     },
-    //基因诊断文件上传
-    '/file_uploadGd' : {
-        controller: 'IndexController',
-        action: 'fileUploadGd'
-    },
+
     //DB文件上传
     '/file_uploadDB' : {
         controller: 'IndexController',
@@ -259,11 +137,7 @@ module.exports.routes = {
         controller: 'IndexController',
         action: 'variants'
     },
-    //vcf的hpo记录
-    '/initSelect' : {
-        controller: 'IndexController',
-        action: 'initSelect'
-    },
+
     //新建研究
     '/newStudy' : {
         controller: 'IndexController',
@@ -308,16 +182,6 @@ module.exports.routes = {
     '/annoHelper' : {
         controller: 'IndexController',
         action: 'annoHelper'
-    },
-    //基因分析
-    '/gene_analyze' : {
-        controller: 'IndexController',
-        action: 'geneAnalyze'
-    },
-    //综合分析
-    '/syn_analyze' : {
-        controller: 'IndexController',
-        action: 'synAnalyze'
     },
     //测试用
   /*'/test': {

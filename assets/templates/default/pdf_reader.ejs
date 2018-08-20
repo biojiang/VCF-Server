@@ -1,4 +1,4 @@
-<% include ./header2.ejs %>
+<% include header.ejs %>
 <style>
     .pdfobject-container { height: 780px;}
     .pdfobject { border: 1px solid #666; }
@@ -9,4 +9,4 @@
 
 </div>
 <script>PDFObject.embed("<%=static_dir%>/pdf/<%-fileName%>", "#container");</script>
-<% include ./footer2.ejs %>
+<% include footer.ejs %>
