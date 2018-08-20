@@ -1,0 +1,18 @@
+<% include ./header.ejs %>
+<div class="col-md-3"></div>
+<div class="col-md-9">
+    <% if (articleList.length > 0) {%>
+    <ul class="ul-articles">
+        <% articleList.forEach(function(one, key){ %>
+        <li class="col-md-9">
+            <a href="/index/search_result/<%=one.id%>"><%=one.title%></a>
+        </li>
+        <div class="fright"><%=dateFormat(one.puttime).substr(0, 10)%></div>
+        <% }) %>
+    </ul>
+    <% include ./pagination.ejs %>
+    <% } else { %>
+    没有找到与"<%=searchWord%>"相关的结果。
+    <% } %>
+</div>
+<% include ./footer.ejs %>

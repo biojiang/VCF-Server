@@ -1,0 +1,12 @@
+<% include ./header2.ejs %>
+<style>
+    .pdfobject-container { height: 780px;}
+    .pdfobject { border: 1px solid #666; }
+</style>
+<!--基因诊断页-->
+<script src="<%=static_dir%>/js/pdfobject.min.js"></script>
+<div class="container" id="container">
+
+</div>
+<script>PDFObject.embed("<%=static_dir%>/pdf/<%-fileName%>", "#container");</script>
+<% include ./footer2.ejs %>

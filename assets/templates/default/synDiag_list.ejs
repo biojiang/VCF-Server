@@ -1,0 +1,536 @@
+<% include ./header2.ejs %>
+<!--疾病搜索结果列表-->
+
+
+<!--cytoscape要引入的文件-->
+<link rel="stylesheet" href="<%=static_dir%>/js/cytoscape/biogrid_jquery.qtip.css"/>
+<link rel="stylesheet" href="<%=static_dir%>/js/cytoscape/jquery.qtip.min.css"/>
+<link rel="stylesheet" href="<%=static_dir%>/js/cytoscape/network.css"/>
+<link rel="stylesheet" href="<%=static_dir%>/css/myStyle2.css">
+<link rel="stylesheet" href="<%=static_dir%>/css/myStyle.css">
+
+<script src="<%=static_dir%>/js/cytoscape/cola.v3.min.js"></script>
+<script src="<%=static_dir%>/js/cytoscape/cytoscape.min.js"></script>
+<script src="<%=static_dir%>/js/cytoscape/jquery.qtip.min.js"></script>
+<script src="<%=static_dir%>/js/cytoscape/cytoscape-qtip.js"></script>
+<script src="<%=static_dir%>/js/cytoscape/cytoscape-cola.js"></script>
+<script src="<%=static_dir%>/js/cytoscape/arbor.js"></script>
+<script src="<%=static_dir%>/js/cytoscape/cytoscape-arbor.js"></script>
+<script src="<%=static_dir%>/js/cytoscape/cxtmenu.js"></script>
+<script src="<%=static_dir%>/js/cytoscape/panzoom.js"></script>
+<script src="<%=static_dir%>/js/cytoscape/network-onload-2.js"></script>
+
+<!-- angularJS -->
+<script>
+    var app = angular.module('myApp', []);
+    app.controller('myCtrl', function($scope) {
+        $scope.diseaseData = [];//搜索出的所有疾病详细数据，未分页，未过滤
+        $scope.diseaseFiltered = [];//过滤过的疾病的diseaseData index
+        $scope.selectedDisease = [];//保存勾选的疾病id
+        $scope.pageDisease = [];//当页显示的疾病的diseaseData index
+        $scope.diseaseSet = [];//勾选疾病的相关症状数据
+        $scope.pageDiseaseSet = [];//当页显示的症状数据
+
+        $scope.listErrMsg = 'loading';
+        $scope.isShowingAll = false;
+        $scope.showDetailed = 'detailed';
+        $scope.diseaseSetAction = 'intersection';
+        $scope.longestLength = eng == 1 ? 24 : 12;
+
+        //绑定过滤输入栏的变量
+        $scope.filterName = '';
+        $scope.filterGene = '';
+        $scope.filterLocation = '';
+        $scope.filterScore = '';
+        $scope.filterPValue = '';
+        $scope.filterAge = '';
+        $scope.filterMode = '';
+        $scope.filterLoad = false;
+
+        $scope.endPage = '';
+        $scope.omimData = [];
+
+        //删除 OMIM列表中的一项
+        $scope.deleteOMIM = function (omim) {
+            $scope.omimData.splice($scope.omimData.indexOf(omim), 1);
+        }
+        //弹出OMIM数据，获取基因的详细信息
+        $scope.getOMIM = function () {
+            if ($scope.endPage == '') return;
+            var param = '';
+            for (var i = 0;i < ($scope.endPage>= $scope.diseaseFiltered.length ?
+                $scope.diseaseFiltered.length: $scope.endPage);i++){
+                param += $scope.diseaseData[$scope.diseaseFiltered[i]].ID + ',';
+            }
+            if (param == '') return;
+            param = param.substr(0, param.length-1);
+            $.ajax({
+                url: 'https://www.diseasegps.org/cgi-bin/MDPA/GeneList.cgi?omim='+param,
+                async: false,
+                success: function (data) {
+                    var parsed = $.parseJSON(data);
+                    $scope.omimData = parsed;
+                    $('#myModal2').modal('show');
+                    showSymptoms();
+                },
+                error: function () {
+                    alert(1);
+                    alert('网络连接异常');
+                }
+            })
+        }
+
+        //显示全部疾病
+        $scope.showAll = function (){
+            $scope.pageDisease = $scope.diseaseFiltered;
+            var $paginationDisease = $('#pagination-disease');
+            if ($paginationDisease.html() != '') {
+                $paginationDisease.pagination('destroy');
+            }
+            //获取热度图数据
+            var params = '';
+            for (var j = 0;j < searchedPhenotype.length;j++) {
+                params += 'HPO=' + searchedPhenotype[j] + '&';
+            }
+            params += 'eng=' + eng;
+            for (var i = 0;i < $scope.pageDisease.length;i++){
+                var dIndex = $scope.pageDisease[i];
+                $scope.getHeat(params, dIndex);
+            }
+        }
+
+        //跳转至病例详情页
+        $scope.gotoDisease = function (dIndex) {
+            var href = '/disease/' + $scope.diseaseData[dIndex].ID;
+            if (searchedPhenotype.length > 0){
+                href += '?HPO=' + JSON.stringify(searchedPhenotype);
+            }
+            window.open(href);
+        }
+
+        //更换详细/简要症状描述
+        $scope.swapDescription = function (symptom) {
+            var tmp = symptom.description;
+            symptom.description = symptom.longDescription;
+            symptom.longDescription = tmp;
+        }
+
+        //更新症状列表
+        $scope.refreshTable = function () {
+            if ($scope.selectedDisease.length == 0){
+                $scope.diseaseSet = [];
+                return;
+            }
+            $.ajax({
+                url: 'https://www.diseasegps.org/cgi-bin/MDPA/DiseaseSet.cgi',
+                data: {
+                    OMIM: $scope.selectedDisease,
+                    action: $scope.diseaseSetAction,
+                    eng: eng
+                },
+                success: function(data){
+                    $scope.$apply(function() {
+                        $scope.diseaseSet = $.parseJSON(data);
+                    });
+                    if ($scope.diseaseSet.length == 0){
+                        return;
+                    }
+                    $('#pagination-phenotype').pagination({
+                        dataSource: $scope.diseaseSet,//数据源，此处为数组
+                        pageSize: 5,//每页显示的数量
+                        hideWhenLessThanOnePage: true, //少于一页时隐藏分页
+                        //pageRange: 9, 在本页页码单侧最多显示的页数
+                        callback: function(data, pagination) {
+                            $scope.$apply(function () {
+                                $scope.pageDiseaseSet = data;
+                                //为描述过长的症状项准备简短描述
+                                for (var i = 0;i < $scope.pageDiseaseSet.length;i++){
+                                    if ($scope.pageDiseaseSet[i].description.length > $scope.longestLength){
+                                        $scope.pageDiseaseSet[i].longDescription = $scope.pageDiseaseSet[i].description;
+                                        $scope.pageDiseaseSet[i].description =
+                                            $scope.pageDiseaseSet[i].description.substr(0, $scope.longestLength);
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            })
+        }
+
+        //弹出网络图的伪函数，ng-click连接需要
+        $scope.buildNetwork = function (sid, tid){
+            buildNetwork(sid, tid);
+        }
+
+        //获取热度图数据
+        $scope.getHeat = function (hpo, dIndex) {
+            if ($scope.diseaseData[dIndex].heat != undefined){
+                return;
+            }
+            var url = "/api/InputScore";
+            $.ajax({
+                type: 'GET',
+                url: url,
+                data: {hpo:hpo, disID:$scope.diseaseData[dIndex].ID},
+                success: function (data) {
+                    var raw = data.Relations;
+
+                    if (raw.length == 0) {return}
+                    $scope.$apply(function() {
+                        $scope.diseaseData[dIndex].heat = [];
+                        for (var k = 0;k < raw.length;k++) {
+                            //var green = parseInt(127+128 * (1-raw[k].similarity));
+                            //var blue = parseInt(127+128 * raw[k].similarity);
+                            var h = parseInt(240*(1-raw[k].similarity));
+                            var sim = function(num){
+                                if(num == 1)
+                                {
+                                    return (Math.round(num * 10000)/100).toFixed(0) + '%';
+                                }
+                                else{
+                                    return (Math.round(num * 10000)/100).toFixed(2) + '%';
+                                }
+
+                            };
+                            //alert(h);
+                            $scope.diseaseData[dIndex].heat[k] = {
+                                css: {
+                                    //'background': 'rgb(127, '+ green +', '+ blue + ')'
+                                    'background': 'hsl('+ h + ',100%,50%)'
+
+                                },
+                                //title: raw[k].source + '->' + raw[k].target,
+                                title:raw[k].source + '->' + raw[k].target+' : '+sim(raw[k].similarity),
+                                SID: raw[k].SID,
+                                TID: raw[k].TID
+                            };
+                        }
+                    });
+                }
+            });
+        }
+
+        //疾病过滤结果刷新，重构症状列表、分页、相关症状
+        $scope.diseasePagination = function(){
+            var $paginationDisease = $('#pagination-disease');
+            if ($scope.diseaseFiltered.length == 0) {
+                $scope.listErrMsg = 'filter';
+                if ($paginationDisease.html() != '') {
+                    $paginationDisease.pagination('destroy');
+                }
+                return;
+            }
+            $scope.listErrMsg = '';
+            for (var i = 0; i < $scope.diseaseFiltered.length; i++) {
+                $scope.diseaseData[$scope.diseaseFiltered[i]].checked = false;
+            }
+            $scope.selectedDisease = [];
+            $scope.diseaseSet = [];
+            $scope.refreshTable();
+            $scope.isShowingAll = false;
+            $paginationDisease.pagination({
+                dataSource: $scope.diseaseFiltered,//数据源
+                pageSize: 10,//每页显示的数量
+                pageRange: 9, //在本页页码单侧最多显示的页数
+                callback: function(data, pagination) {
+                    //pagination的第一次callback是同步的，此时使用$apply会出错。
+                    if ($scope.filterLoad){
+                        $scope.filterLoad = false;
+                        $scope.pageDisease = data;
+                    } else {
+                        $scope.$apply(function (){
+                            $scope.pageDisease = data;
+                        })
+                    }
+                    window.scrollTo(0, 0);
+                    //获取热度图数据
+                    var hpo = '';
+                    for (var j = 0;j < searchedPhenotype.length;j++) {
+                        hpo += searchedPhenotype[j] + '|';
+                    }
+                    for (var i = 0;i < $scope.pageDisease.length;i++){
+                        var dIndex = $scope.pageDisease[i];
+                        $scope.getHeat(hpo, dIndex);
+                    }
+                }
+            });
+        }
+
+        //获取疾病数据，需在页面加载时完成
+        var getDisease = function (){
+            var hpo = '<%-hpo%>';
+            var filename = '<%-fileName%>';
+            var guid = '<%-guid%>';
+            var url = '/syn_analyze';
+            $.ajax({
+                type: 'GET',
+                url: url,
+                data: {
+                    hpo:hpo,
+                    filename:filename,
+                    guid:guid
+                },
+                success: function (data) {
+                    $('#radio-disease').show();
+                    $scope.diseaseData = data;
+                    //$apply会执行作为参数的函数，完成后会更新视图，以免pagination找不到标签而出错
+                    $scope.$apply(function (){
+                        for (var i = 0;i < $scope.diseaseData.length;i++){
+                            $scope.diseaseData[i].Synonym = $scope.diseaseData[i].Synonym.split(';;');
+                            $scope.diseaseFiltered[i] = i;
+                        }
+                    });
+                    $scope.diseasePagination();
+                },
+                error: function () {
+                    $scope.listErrMsg = 'connection'
+                }
+            });
+        };
+
+        getDisease();
+    });
+
+    var searchedPhenotype = [];//初始搜索关键字
+
+    $(document).ready(function() {
+        //弹出用于显示症状网络图的对话框
+        $('#myModal').on('shown.bs.modal', buildCY).on('hide.bs.modal', function () {
+            $('.qtip-pos-bl').remove();
+        });
+        var hpo = '<%-hpo%>';
+        var filename = '<%-fileName%>';
+        searchedPhenotype = hpo.split("|");
+        var str = '<%-line%>';
+        $(".indexLink").attr('href','/list?'+str);
+        $(".geneLink").attr('href','/GeneDiagList?filename='+filename);
+
+    });
+</script>
+
+<div id="network-data" style="display: none;"></div>
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" id="picDialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">
+                    <% if (lan == 'eng') { %>Phenotype relation diagram<% } else { %>症状关系图<% } %>
+                </h4>
+            </div>
+            <div class="modal-body">
+                <DIV id="cy"></DIV>
+                <DIV id="network-image-form">
+                    <FORM id="networkImageForm" action="http://thebiogrid.org/scripts/downloadNetworkImage.php"
+                          method="POST"><INPUT name="networkImage" id="networkImage" type="hidden">
+                    </FORM>
+                </DIV>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<script>
+    //获取网络图数据并弹出。网络图数据已经由GPS引擎进行模版化
+    function buildNetwork(source, target){
+        var url = "/api/Network";
+        $.ajax({
+            url : url,
+            data: {shpo:source,thpo:target},
+            type: 'GET',
+            dataType: 'text',
+            success: function( msg ) {
+                $('#network-data').html( msg );
+                $('#myModal').modal('show');
+            },
+            error: function() {
+                alert("网络连接异常");
+            }
+        })
+    }
+</script>
+
+<div class="row">
+        <!--显示疾病时可选择显示精简信息或者详细信息。可以直接显示所有结果，还可进行过滤。-->
+        <div id="radio-disease" class="row" hidden>
+
+                <input value="detailed" name="showAmount" type="radio" ng-model="showDetailed">
+                 <% if (lan == 'eng') { %>Detail<% } else { %>详细<% } %>&nbsp;&nbsp;&nbsp;
+                <input value="concise" name="showAmount" type="radio" ng-model="showDetailed"><% if (lan == 'eng') { %>Concise<% } else { %>精简<% } %>
+            &nbsp;&nbsp;&nbsp;
+            <a href="javascript:void(0);" ng-if="!isShowingAll" ng-click="showAll();">
+                    <% if (lan == 'eng') { %>Show all<% } else { %>显示全部<% } %>
+                </a>
+            <span>Score:</span> <img id="color_band" alt="color" src="<%=static_dir%>/img/color_band2.png"/>
+        </div>
+        <!--逐条显示疾病-->
+        <div id="diseaseList">
+            <h3 ng-if="listErrMsg=='loading'">
+                <% if (lan == 'eng') { %>Loading search result, please wait...<% } else { %>搜索结果加载中，请稍候……<% } %>
+            </h3>
+
+            <a href="/index" ng-if="listErrMsg=='result'">
+                <%-lan=='eng' ? 'No result found. Click to jump to home page' : '没有找到结果，点击返回搜索页'%>
+            </a>
+            <a href="/index" ng-if="listErrMsg=='connection'">
+                <%-lan=='eng' ? 'Error. Click to jump to home page' : '网络连接异常，点击返回搜索页'%>
+            </a>
+
+            <div class="block-disease" ng-if="diseaseFiltered.length > 0"
+                 ng-repeat="dIndex in (isShowingAll ? diseaseFiltered : pageDisease)">
+                <div class="title-disease"><!--标题块-->
+                    <a href="javascript: void(0);" ng-click="gotoDisease(dIndex)">
+                        {{ diseaseData[dIndex].NO }}. {{ diseaseData[dIndex].Name }}
+                    </a>
+                    <input class="pull-right" type="checkbox" ng-model="diseaseData[dIndex].checked" ng-click="onCheckSwitch(dIndex)">
+                    <br>
+                    <i>
+                        (<%-lan=='eng'?'Score':'分数'%>: {{ diseaseData[dIndex].Score }})
+                    </i>
+                </div>
+                <div class="heat-disease row noMargin" ng-if="diseaseData[dIndex].heat != undefined"><!--热度图-->
+                    <div class="block-color col-md-1" ng-repeat="heat in diseaseData[dIndex].heat"
+                         ng-style="heat.css" title="{{heat.title}}"
+                         ng-click="buildNetwork(heat.SID, heat.TID)"></div>
+                </div>
+                <div class="description-disease" ng-if="showDetailed == 'detailed' && diseaseData[dIndex].Description != 'NULL'">
+                    {{ diseaseData[dIndex].Description }}
+                </div>
+                <div class="gene-disease"
+                     ng-if="showDetailed == 'detailed'">
+                    <b><%-lan=='eng'?'Synonym':'同义词'%>: </b>
+                    <p ng-repeat="synonym in diseaseData[dIndex].Synonym">
+                        {{ synonym }}
+                    </p>
+                </div>
+                <div class="gene-disease"
+                     ng-if="showDetailed == 'detailed' && diseaseData[dIndex].ACMG != undefined">
+                    <b><% if (lan == 'eng') { %>Pathogenic Gene Based on ACMG:<% } else { %>基于ACMG的致病基因:<% } %></b>
+                    <a target="_blank" href="{{ '/vcf_viewer'+'?fileName=<%-fileName%>'+'&filter={%22INFO.Ref__Gene%22:%7b%22$in%22:[%22'+diseaseData[dIndex].ACMG.gene+'%22]%7d}' }}" >
+                        {{ diseaseData[dIndex].ACMG.gene + '(' + diseaseData[dIndex].ACMG.sig + ')'}}
+                    </a>
+                </div>
+                <div class="gene-disease"
+                     ng-if="showDetailed == 'detailed' && diseaseData[dIndex].ACMG != undefined">
+                    <b><% if (lan == 'eng') { %>Evidence of Pathogenicity:<% } else { %>致病性证据:<% } %></b>
+                    <table class = "table table-striped">
+                        <tr>
+                            <td><% if (lan == 'eng') { %>Very strong<% } else { %>非常强<% } %></td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.PVS1[0] == 0" bgcolor="white" title="PVS1 null variant (nonsense, frameshift, canonical ±1 or 2 splice sites, initiation codon, single or multiexon deletion) in a gene where LOF is a known mechanism of disease.">PVS1</td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.PVS1[0] == 1" bgcolor="red" title="PVS1 null variant (nonsense, frameshift, canonical ±1 or 2 splice sites, initiation codon, single or multiexon deletion) in a gene where LOF is a known mechanism of disease.">PVS1</td>
+                        </tr>
+                        <tr>
+                            <td><% if (lan == 'eng') { %>Strong<% } else { %>强<% } %></td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.PS[0] == 0" bgcolor="white" title="PS1 Same amino acid change as a previously established pathogenic variant regardless of nucleotide change.">PS1</td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.PS[0] == 1" bgcolor="red" title="PS1 Same amino acid change as a previously established pathogenic variant regardless of nucleotide change.">PS1</td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.PS[1] == 0" bgcolor="white" title="PS2 De novo (both maternity and paternity confirmed) in a patient with the disease and no family history.">PS2</td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.PS[1] == 1" bgcolor="red" title="PS2 De novo (both maternity and paternity confirmed) in a patient with the disease and no family history.">PS2</td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.PS[2] == 0" bgcolor="white" title="PS3 Well-established in vitro or in vivo functional studies supportive of a damaging effect on the gene or gene product.">PS3</td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.PS[2] == 1" bgcolor="red" title="PS3 Well-established in vitro or in vivo functional studies supportive of a damaging effect on the gene or gene product.">PS3</td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.PS[3] == 0" bgcolor="white" title="PS4 The prevalence of the variant in affected individuals is significantly increased compared with the prevalence in controls.">PS4</td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.PS[3] == 1" bgcolor="red" title="PS4 The prevalence of the variant in affected individuals is significantly increased compared with the prevalence in controls.">PS4</td>
+
+                        </tr>
+                        <tr>
+                            <td><% if (lan == 'eng') { %>Moderate<% } else { %>中等<% } %></td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.PM[0] == 0" bgcolor="white" title="PM1 Located in a mutational hot spot and/or critical and well-established functional domain (e.g., active site of an enzyme) without benign variation.">PM1</td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.PM[0] == 1" bgcolor="red" title="PM1 Located in a mutational hot spot and/or critical and well-established functional domain (e.g., active site of an enzyme) without benign variation.">PM1</td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.PM[1] == 0" bgcolor="white" title="PM2 Absent from controls (or at extremely low frequency if recessive) in Exome Sequencing Project, 1000 Genomes Project, or Exome Aggregation Consortium.">PM2</td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.PM[1] == 1" bgcolor="red" title="PM2 Absent from controls (or at extremely low frequency if recessive) in Exome Sequencing Project, 1000 Genomes Project, or Exome Aggregation Consortium.">PM2</td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.PM[2] == 0" bgcolor="white" title="PM3 For recessive disorders, detected in trans with a pathogenic variant.">PM3</td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.PM[2] == 1" bgcolor="red" title="PM3 For recessive disorders, detected in trans with a pathogenic variant.">PM3</td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.PM[3] == 0" bgcolor="white" title="PM4 Protein length changes as a result of in-frame deletions/insertions in a nonrepeat region or stop-loss variants.">PM4</td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.PM[3] == 1" bgcolor="red" title="PM4 Protein length changes as a result of in-frame deletions/insertions in a nonrepeat region or stop-loss variants.">PM4</td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.PM[4] == 0" bgcolor="white" title="PM5 Novel missense change at an amino acid residue where a different missense change determined to be pathogenic has been seen before.">PM5</td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.PM[4] == 1" bgcolor="red" title="PM5 Novel missense change at an amino acid residue where a different missense change determined to be pathogenic has been seen before.">PM5</td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.PM[5] == 0" bgcolor="white" title="PM6 Assumed de novo, but without confirmation of paternity and maternity.">PM6</td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.PM[5] == 1" bgcolor="red" title="PM6 Assumed de novo, but without confirmation of paternity and maternity.">PM6</td>
+
+                        </tr>
+                        <tr>
+                            <td><% if (lan == 'eng') { %>Supporting<% } else { %>支持<% } %></td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.PP[0] == 0" bgcolor="white" title="PP1 Cosegregation with disease in multiple affected family members in a gene definitively known to cause the disease.">PP1</td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.PP[0] == 1" bgcolor="red" title="PP1 Cosegregation with disease in multiple affected family members in a gene definitively known to cause the disease.">PP1</td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.PP[1] == 0" bgcolor="white" title="PP2 Missense variant in a gene that has a low rate of benign missense variation and in which missense variants are a common mechanism of disease.">PP2</td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.PP[1] == 1" bgcolor="red" title="PP2 Missense variant in a gene that has a low rate of benign missense variation and in which missense variants are a common mechanism of disease.">PP2</td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.PP[2] == 0" bgcolor="white" title="PP3 Multiple lines of computational evidence support a deleterious effect on the gene or gene product (conservation, evolutionary, splicing impact, etc.).">PP3</td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.PP[2] == 1" bgcolor="red" title="PP3 Multiple lines of computational evidence support a deleterious effect on the gene or gene product (conservation, evolutionary, splicing impact, etc.).">PP3</td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.PP[3] == 0" bgcolor="white" title="PP4 Patient’s phenotype or family history is highly specific for a disease with a single genetic etiology.">PP4</td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.PP[3] == 1" bgcolor="red" title="PP4 Patient’s phenotype or family history is highly specific for a disease with a single genetic etiology.">PP4</td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.PP[4] == 0" bgcolor="white" title="PP5 Reputable source recently reports variant as pathogenic, but the evidence is not available to the laboratory to perform an independent evaluation.">PP5</td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.PP[4] == 1" bgcolor="red" title="PP5 Reputable source recently reports variant as pathogenic, but the evidence is not available to the laboratory to perform an independent evaluation.">PP5</td>
+
+                        </tr>
+                    </table>
+                    <b><% if (lan == 'eng') { %>Evidence of Benign:<% } else { %>良性证据<% } %></b>
+                    <table class = "table table-striped">
+                        <tr>
+                            <td><% if (lan == 'eng') { %>Stand-alone<% } else { %>独立<% } %></td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.BA1[0] == 0" bgcolor="white" title="BA1 Allele frequency is >5% in Exome Sequencing Project, 1000 Genomes Project, or Exome Aggregation Consortium.">BA1</td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.BA1[0] == 1" bgcolor="green" title="BA1 Allele frequency is >5% in Exome Sequencing Project, 1000 Genomes Project, or Exome Aggregation Consortium.">BA1</td>
+                        </tr>
+                        <tr>
+                            <td><% if (lan == 'eng') { %>Strong<% } else { %>强<% } %></td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.BS[0] == 0" bgcolor="white" title="BS1 Allele frequency is greater than expected for disorder.">BS1</td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.BS[0] == 1" bgcolor="green" title="BS1 Allele frequency is greater than expected for disorder.">BS1</td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.BS[1] == 0" bgcolor="white" title="BS2 Observed in a healthy adult individual for a recessive (homozygous), dominant (heterozygous), or X-linked (hemizygous) disorder, with full penetrance expected at an early age.">BS2</td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.BS[1] == 1" bgcolor="green" title="BS2 Observed in a healthy adult individual for a recessive (homozygous), dominant (heterozygous), or X-linked (hemizygous) disorder, with full penetrance expected at an early age.">BS2</td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.BS[2] == 0" bgcolor="white" title="BS3 Well-established in vitro or in vivo functional studies show no damaging effect on protein function or splicing.">BS3</td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.BS[2] == 1" bgcolor="green" title="BS3 Well-established in vitro or in vivo functional studies show no damaging effect on protein function or splicing.">BS3</td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.BS[3] == 0" bgcolor="white" title="BS4 Lack of segregation in affected members of a family.">BS4</td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.BS[3] == 1" bgcolor="green" title="BS4 Lack of segregation in affected members of a family.">BS4</td>
+
+                        </tr>
+                        <tr>
+                            <td><% if (lan == 'eng') { %>Supporting<% } else { %>支持<% } %></td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.BP[0] == 0" bgcolor="white" title="BP1 Missense variant in a gene for which primarily truncating variants are known to cause disease.">BP1</td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.BP[0] == 1" bgcolor="green" title="BP1 Missense variant in a gene for which primarily truncating variants are known to cause disease.">BP1</td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.BP[1] == 0" bgcolor="white" title="BP2 Observed in trans with a pathogenic variant for a fully penetrant dominant gene/disorder or observed in cis with a pathogenic variant in any inheritance pattern.">BP2</td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.BP[1] == 1" bgcolor="green" title="BP2 Observed in trans with a pathogenic variant for a fully penetrant dominant gene/disorder or observed in cis with a pathogenic variant in any inheritance pattern.">BP2</td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.BP[2] == 0" bgcolor="white" title="BP3 In-frame deletions/insertions in a repetitive region without a known function.">BP3</td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.BP[2] == 1" bgcolor="green" title="BP3 In-frame deletions/insertions in a repetitive region without a known function.">BP3</td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.BP[3] == 0" bgcolor="white" title="BP4 Multiple lines of computational evidence suggest no impact on gene or gene product (conservation, evolutionary, splicing impact, etc.).">BP4</td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.BP[3] == 1" bgcolor="green" title="BP4 Multiple lines of computational evidence suggest no impact on gene or gene product (conservation, evolutionary, splicing impact, etc.).">BP4</td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.BP[4] == 0" bgcolor="white" title="BP5 Variant found in a case with an alternate molecular basis for disease.">BP5</td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.BP[4] == 1" bgcolor="green" title="BP5 Variant found in a case with an alternate molecular basis for disease.">BP5</td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.BP[5] == 0" bgcolor="white" title="BP6 Reputable source recently reports variant as benign, but the evidence is not available to the laboratory to perform an independent evaluation.">BP6</td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.BP[5] == 1" bgcolor="green" title="BP6 Reputable source recently reports variant as benign, but the evidence is not available to the laboratory to perform an independent evaluation.">BP6</td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.BP[6] == 0" bgcolor="white" title="BP7 A synonymous (silent) variant for which splicing prediction algorithms predict no impact to the splice consensus sequence nor the creation of a new splice site AND the nucleotide is not highly conserved.">BP7</td>
+                            <td ng-if="diseaseData[dIndex].ACMG.str.BP[6] == 1" bgcolor="green" title="BP7 A synonymous (silent) variant for which splicing prediction algorithms predict no impact to the splice consensus sequence nor the creation of a new splice site AND the nucleotide is not highly conserved.">BP7</td>
+                        </tr>
+                    </table>
+
+                </div>
+                <div class="gene-disease"
+                     ng-if="showDetailed == 'detailed' && diseaseData[dIndex].Genes != undefined && diseaseData[dIndex].Genes.length > 0">
+                    <b><% if (lan == 'eng') { %>OMIM Gene(Cytogenetic location):<% } else { %>OMIM基因(染色体位置)：<% } %></b>
+                    <a target="_blank" href="{{ '/gene/' + gene.gene }}" ng-repeat="gene in diseaseData[dIndex].Genes">
+                        {{ gene.gene + '(' + gene.cytoband + ');' }}
+                    </a>
+                </div>
+                <div class="gene-disease"
+                     ng-if="showDetailed == 'detailed' && diseaseData[dIndex].Genes_hpo != undefined && diseaseData[dIndex].Genes_hpo.length > 0">
+                    <b><% if (lan == 'eng') { %>HPO Gene(Cytogenetic location):<% } else { %>HPO基因(染色体位置)：<% } %></b>
+                    <a target="_blank" href="{{ '/gene/' + gene.gene }}" ng-repeat="gene in diseaseData[dIndex].Genes_hpo">
+                        {{ gene.gene + '(' + gene.cytoband + ');' }}
+                    </a>
+                </div>
+                <div class="others-disease" ng-if="showDetailed == 'detailed'">
+                    <b><%-lan!='eng' ? '遗传模式' : 'Mode of inheritance'%>: </b>{{ diseaseData[dIndex].MOI }} <br>
+                    <b><%-lan!='eng' ? '死亡年龄' : 'Age of death'%>: </b>{{ diseaseData[dIndex].AOD }} <br>
+                    <b><%-lan!='eng' ? '发病率' : 'Prevalence'%>: </b>{{ diseaseData[dIndex].Prevalence }} <br>
+                    <b>INDEL: </b>{{ diseaseData[dIndex].INDEL }} <br>
+                    <b><%-lan!='eng' ? '临床调节因素' : 'Clinical modifier'%>: </b>{{ diseaseData[dIndex].Clinical_modifier }} <br>
+                    <b><%-lan!='eng' ? '发病年龄' : 'Onset'%>: </b>
+                    {{ diseaseData[dIndex].Onset == 'All ages' ? ('<%-lan%>' == 'eng' ? 'All ages' : '全年龄段') : diseaseData[dIndex].Onset }}
+                    <br/>
+                    <a target="_blank" href="{{ 'https://omim.org/entry/'+diseaseData[dIndex].ID }}">
+                        <b>OMIM: {{ diseaseData[dIndex].ID }}</b>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div id="pagination-disease"></div>
+    </div>
+
+
+<% include ./footer2.ejs %>

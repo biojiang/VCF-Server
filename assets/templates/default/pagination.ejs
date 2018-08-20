@@ -1,0 +1,38 @@
+<div class="col-md-12 pagination-bar">
+    共<%=pages.length%>页
+    <% if (pages.length > 1) {%>
+    跳转至：
+    <select class="page-selector" onchange="gotoPage(this[selectedIndex].value);">
+        <% pages.forEach(function(one, key) {%>
+        <option value="<%=one%>" <% if (currentPage === one) {%> selected <% } %>>
+            第<%=one%>页
+        </option>
+        <% }) %>
+    </select>
+    <% }
+    var separator = originalUrl.indexOf('?') >= 0 ? '&' : '?';
+    if (currentPage > 1) { %>
+    <a href="<%=originalUrl+separator%>page=<%=currentPage-1%>" class="fleft" >上页</a>
+    <% } else { %>
+    <a class="fleft disabled">上页</a>
+    <% }
+    if (currentPage < pages.length) { %>
+    <a href="<%=originalUrl+separator%>page=<%=currentPage+1%>" class="fright">下页</a>
+    <% } else { %>
+    <a class="fright disabled">下页</a>
+    <% } %>
+</div>
+
+<script>
+    function gotoPage(page) {
+        var hrefFragment = window.location.href.split("page=", 2);
+        if (hrefFragment[1]) {
+            hrefFragment[1] = hrefFragment[1].split("&", 2)[1] || "";
+        }
+        else {
+            hrefFragment[0] += hrefFragment[0].indexOf('?') >= 0 ? '&' : '?';
+            hrefFragment[1] = "";
+        }
+        window.location.href = hrefFragment[0] + "page=" + page + "&" + hrefFragment[1];
+    }
+</script>

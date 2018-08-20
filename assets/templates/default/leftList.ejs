@@ -1,0 +1,31 @@
+<div class="col-md-3 left-list">
+    <ul class="left-list-head">
+        <li>树形图</li>
+    </ul>
+    <ul class="left-list-body">
+        <% categoryList.forEach(function(one, key){ %>
+        <li>
+            <a href="javascript:void(0)"
+               <% if (one.dir==currentMenu[1]) { %>id="myActive1"<% } %>
+               onclick="document.getElementsByClassName('left-list-body-3')[0].style.display=document.getElementsByClassName('left-list-body-3')[0].style.display=='block'?'none':'block'; ">
+                <%=one.name%>
+            </a>
+            &nbsp;<img src="<%=static_dir%>/img/Folding.png"/>
+            <ul class="left-list-body-3"
+                <% if (currentMenu.length > 2) { %> style="display: block;"
+                <% } else { %> style="display: none;" <% } %>
+            >
+                <hr style="position: absolute; height: <%=46*category3List.length-18%>px; border-left: 1px dashed #80BA30; margin-left: 28px; margin-top: -10px;"/>
+                <% category3List.forEach(function(one1, key){ %>
+                <li>
+                    <hr style="position: absolute; border-top: 1px dashed #80BA30; width: 20px; margin-left: 28px; margin-top: 21px;"/>
+                    <a href="/index/<%=currentMenu[0]+"_"+one.dir+"_"+one1.dir%>"  <% if (one1.dir==currentMenu[2]) { %>id="myActive1"<% } %>>
+                        <%=one1.name%>
+                    </a>
+                </li>
+                <% }) %>
+            </ul>
+        </li>
+        <% }) %>
+    </ul>
+</div>

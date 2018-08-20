@@ -1,0 +1,984 @@
+<% include ./header2.ejs %>
+<!--基因诊断页-->
+<link href="<%=static_dir%>/js/dynatree/src/skin/custom.css" rel="stylesheet" type="text/css">
+<script src="<%=static_dir%>/js/accounting.min.js"></script>
+
+<div class="modal fade" id="createFolderModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4><% if (lan == 'eng') { %> New Study <% } else { %> 新研究<% } %></h4>
+            </div>
+            <div class="modal-body">
+                <p><%-currentDir %></p>
+                <label class="control-label"><% if (lan == 'eng') { %> Study Name <% } else { %> 研究名<% } %></label><input class="form-control" autofocus id="studyName"/>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="newStudy()">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="CustDBModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4><% if (lan == 'eng') { %> Custom Databases <% } else { %> 自定义数据库 <% } %></h4>
+            </div>
+
+            <ul class="nav nav-tabs" id="myTab">
+                <li class="active">
+                    <a href="#bodyDB" id='tab-function' data-toggle="tab"><% if (lan == 'eng') { %>Custom Databases<% } else { %>自定义数据库<% } %></a>
+                </li>
+                <li class="">
+                    <a href="#bodyUpload" id='tab-frequency' data-toggle="tab"><% if (lan == 'eng') { %>Upload Database<% } else { %>上传数据库<% } %></a>
+                </li>
+
+            </ul>
+            <div class="tab-content">
+                <div class="modal-body tab-pane active" id="bodyDB">
+                    <div id="ContentBodyDB"></div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+                    </div>
+                </div>
+                <div class="modal-body tab-pane" id="bodyUpload">
+                    <div id="ContentBodyUpload">
+                        <div class="row">
+                            <label class="col-md-12" for="uploads"><% if (lan == 'eng') { %>File: <% } else { %>文件：<% } %>
+                                <input id="db-upload-input" accept=".vcf,.vcf.gz" name="uploads" type="file" class="form-control" autofocus/>
+                            </label>
+                            <label class="col-md-6" for="dbFileName"><% if (lan == 'eng') { %>Database Name: <span class="glyphicon glyphicon-info-sign" title="Please end with .vcf or .gz"></span> <% } else { %>数据库名：<% } %>
+                                <input type="text" id="dbFileName" name="dbFileName" value="">
+                            </label>
+                            <label class="col-md-6" for="db-hg"><% if (lan == 'eng') { %> Genome Version: <% } else { %> 基因组版本： <% } %>
+                                <select id="db-hg" name="db-hg">
+                                    <option value="hg19" selected>hg19/CRCh37</option>
+                                    <option value="hg38">hg38/CRCh38</option>
+                                </select>
+                            </label>
+                        </div>
+
+                        <div class="row">
+                            <label class="col-md-12" for="dbDescription"><% if (lan == 'eng') { %>Description: <% } else { %>描述：<% } %>
+                                <textarea rows="3" cols="20" id="dbDescription" name="dbDescription" placeholder="<% if (lan == 'eng') { %>Database information <% } else { %>数据库信息<% } %>"></textarea>
+                            </label>
+                        </div>
+                        <div class="progress">
+                            <div id="db-upload-bar" class="progress-bar" role="progressbar"></div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-primary db-upload-btn">OK</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="uploadFileModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4><% if (lan == 'eng') { %> Upload File - Maximum for 5GB <% } else { %> 上传文件 - 最大支持5GB<% } %></h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <label class="col-md-12" for="uploads"><% if (lan == 'eng') { %>File: <% } else { %>文件：<% } %>
+                    <input id="upload-input" accept=".vcf,.vcf.gz" name="uploads" type="file" class="form-control" autofocus/>
+                    </label>
+                </div>
+                <div class="row">
+                    <label class="col-md-6" for="public"><% if (lan == 'eng') { %> Public: <% } else { %> 公开： <% } %>
+                        <select id="public" name="public">
+                            <option value="0" selected><% if (lan == 'eng') { %> No <% } else { %> 否 <% } %></option>
+                            <option value="1"><% if (lan == 'eng') { %> Yes <% } else { %> 是 <% } %></option>
+                        </select>
+                    </label>
+                    <label class="col-md-6" for="genome_version"><% if (lan == 'eng') { %> Genome Version: <% } else { %> 基因组版本： <% } %>
+                        <select id="genome_version" name="genome_version">
+                            <option value="hg19" selected>hg19/CRCh37</option>
+                            <option value="hg38">hg38/CRCh38</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="row">
+                    <label class="col-md-12" for="description"><% if (lan == 'eng') { %>Description: <% } else { %>文件描述：<% } %>
+                        <textarea rows="3" cols="20" id="description" name="description" placeholder="<% if (lan == 'eng') { %>Please describe this VCF file! <% } else { %>VCF文件相关信息！<% } %>"></textarea>
+                    </label>
+                </div>
+                <div class="progress">
+                        <div id="upload-bar" class="progress-bar" role="progressbar"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary upload-btn">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="annotateFileModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4><% if (lan == 'eng') { %> Annotation Databases <% } else { %> 注释数据库 <% } %></h4>
+            </div>
+
+                <ul class="nav nav-tabs" id="myTab">
+                    <li class="active">
+                        <a href="#bodyFunction" id='tab-function' data-toggle="tab"><% if (lan == 'eng') { %>Variants Function<% } else { %>位点功能<% } %></a>
+                    </li>
+                    <li class="">
+                        <a href="#bodyFrequency" id='tab-frequency' data-toggle="tab"><% if (lan == 'eng') { %>Frequency<% } else { %>等位基因频率<% } %></a>
+                    </li>
+                    <li class="">
+                        <a href="#bodyPrediction" id='tab-prediction' data-toggle="tab"><% if (lan == 'eng') { %>Prediction<% } else { %>致病性预测<% } %></a>
+                    </li>
+                    <li class="">
+                        <a href="#bodyCustom" id='tab-custom' data-toggle="tab"><% if (lan == 'eng') { %>Custom<% } else { %>自定义<% } %></a>
+                    </li>
+                </ul>
+            <div class="tab-content">
+                <div class="modal-body tab-pane active" id="bodyFunction">
+                    <a href="javascript:void(0)" onclick="selectAll('funTree')"><% if (lan == 'eng') { %>Select all<% } else { %>全选<% } %></a> -
+                    <a href="javascript:void(0)" onclick="deselectAll('funTree')"><% if (lan == 'eng') { %>Deselect all<% } else { %>清空<% } %></a>
+                    <div id="funTree"></div>
+                </div>
+                <div class="modal-body tab-pane" id="bodyFrequency">
+                    <a href="javascript:void(0)" onclick="selectAll('freqTree')"><% if (lan == 'eng') { %>Select all<% } else { %>全选<% } %></a> -
+                    <a href="javascript:void(0)" onclick="deselectAll('freqTree')"><% if (lan == 'eng') { %>Deselect all<% } else { %>清空<% } %></a>
+                    <div id="freqTree"></div>
+                </div>
+                <div class="modal-body tab-pane" id="bodyPrediction">
+                    <a href="javascript:void(0)" onclick="selectAll('predTree')"><% if (lan == 'eng') { %>Select all<% } else { %>全选<% } %></a> -
+                    <a href="javascript:void(0)" onclick="deselectAll('predTree')"><% if (lan == 'eng') { %>Deselect all<% } else { %>清空<% } %></a>
+                    <div id="predTree"></div>
+                </div>
+                <div class="modal-body tab-pane" id="bodyCustom">
+                    <a href="javascript:void(0)" onclick="selectAll('custTree')"><% if (lan == 'eng') { %>Select all<% } else { %>全选<% } %></a> -
+                    <a href="javascript:void(0)" onclick="deselectAll('custTree')"><% if (lan == 'eng') { %>Deselect all<% } else { %>清空<% } %></a>
+                    <div id="custTree"></div>
+                </div>
+
+            </div>
+            <div class="row">
+                <label class="col-md-6" for="FileName"><% if (lan == 'eng') { %>File Name: <% } else { %>文件名：<% } %>
+                    <input type="text" id="FileName" name="FileName" value="" readonly="readonly" >
+                </label>
+                <label class="col-md-6" for="annoFileName"><% if (lan == 'eng') { %>Annotation File Name: <span class="glyphicon glyphicon-info-sign" title="Please end with .vcf or .vcf.gz"></span> <% } else { %>注释文件名： <span class="glyphicon glyphicon-info-sign" title="请以.vcf或者.vcf.gz结尾"></span><% } %>
+                    <input type="text" id="annoFileName" name="annoFileName" value="">
+                </label>
+            </div>
+            <div class="row">
+                <label class="col-md-12" for="annoDescription"><% if (lan == 'eng') { %>Description: <% } else { %>文件描述：<% } %>
+                    <textarea rows="3" cols="20" id="annoDescription" name="annoDescription" placeholder="<% if (lan == 'eng') { %>Please describe this VCF file! <% } else { %>VCF文件相关信息！<% } %>"></textarea>
+                </label>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary anno-btn" onclick="sendTree()">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="container">
+    <div class="btn-toolbar">
+        <% if (userName != '') {%>
+            <% if(study == 0) {%>
+        <button type="button" class="btn btn-default pull-right" data-toggle="modal" data-target="#CustDBModal" onclick="LoadCustDB()"><span class="fa fa-cog" aria-hidden="true"></span><% if (lan == 'eng') { %> Custum DB <% } else { %> 配置自定义库<% } %></button>
+        <button type="button" class="btn btn-default pull-right" data-toggle="modal" data-target="#createFolderModal"><span class="fa fa-flask" aria-hidden="true"></span><% if (lan == 'eng') { %> New Study <% } else { %> 新研究<% } %></button>
+            <%} else{ %>
+                <button type="button" class="btn btn-default pull-right" data-toggle="modal" data-target="#uploadFileModal"><span class="glyphicon glyphicon-upload"></span><% if (lan == 'eng') { %> Upload VCF<% } else { %> 上传VCF<% } %></button>
+            <% } %>
+        <% } else{ if(currentDir === '/tmp'){%>
+        <button type="button" class="btn btn-default pull-right" data-toggle="modal" data-target="#uploadFileModal"><span class="glyphicon glyphicon-upload"></span><% if (lan == 'eng') { %> Upload VCF<% } else { %> 上传VCF<% } %></button>
+        <%}}%>
+    </div>
+
+    <ol class="breadcrumb">
+        <span class="glyphicon glyphicon-home"></span>
+        <li><a href="javascript:void(0)" onclick="closeStudy()"><%if(userName == ''){%>public<%}else{%> <%-userName%> <%}%></a> <%-currentDir%></li>
+    </ol>
+    <div id="errMsg"><% if(userName == '' && currentDir == '/tmp'){if (lan == 'eng') { %> <h4 class="text-danger">Notice: VCF files in this folder will be <strong><u>deleted</u></strong> after close, please download/export them to local disk on time. </h4><% } else { %><h4 class="text-danger">注意：该目录下的VCF文件在浏览器退出后将被<strong><u>清除</u></strong>，请及时导出到本地！</h4><% }} %></div>
+    <table class="table table-hover table-striped">
+        <thead>
+        <tr class="sortable">
+            <% if(study == 0) {%>
+                <th><% if (lan == 'eng') { %> Type <% } else { %> 类型<% } %></th>
+                <th><% if (lan == 'eng') { %> Study Name <% } else { %> 研究名<% } %></th>
+                <th><% if (lan == 'eng') { %> File Number <% } else { %> 文件数<% } %></th>
+                <th><% if (lan == 'eng') { %> Time <% } else { %> 修改时间<% } %></th>
+                <th><% if (lan == 'eng') { %> Action <% } else { %> 操作<% } %></th>
+            <%}else {%>
+                <th><% if (lan == 'eng') { %> Type <% } else { %> 类型<% } %></th>
+                <th><% if (lan == 'eng') { %> Name <% } else { %> 文件名<% } %></th>
+                <th><% if (lan == 'eng') { %> Size <% } else { %> 文件大小<% } %></th>
+                <th><% if (lan == 'eng') { %> Variants <% } else { %> 变异数<% } %></th>
+                <th><% if (lan == 'eng') { %> Time <% } else { %> 修改时间<% } %></th>
+                <th><% if (lan == 'eng') { %> Action <% } else { %> 操作<% } %></th>
+                <th><% if (lan == 'eng') { %> Status <% } else { %> 导入状态<% } %></th>
+            <%}%>
+        </tr>
+        </thead>
+        <tbody id="fileList"></tbody>
+    </table>
+    <ul>
+        <li><% if (lan == 'eng') { %>
+            <a href="/pdf_reader?fileName=VCF-Server-Manual-EN.pdf">
+                VCF-Server User Manual (2018-07-09)
+            </a>
+            <% } else { %>
+            <a href="/pdf_reader?fileName=VCF-Server-Manual-CH.pdf">
+                VCF-Server用户手册 (2018-07-09)
+            </a>
+            <% } %></li>
+    </ul>
+
+</div>
+<script>
+    function funTree(user,filename) {
+        var fn = filename.replace(/.vcf/i,".anno.vcf");
+        var api = "/annoHelper";
+        $("#annoFileName").val(fn);
+        $("#FileName").val(filename);
+        //初始化树形图
+        $.ui.dynatree.nodedatadefaults["icon"] = false;
+        $("#funTree").dynatree({
+            fx: {height: "toggle", duration: 300},
+            autoFocus: false,
+            checkbox: true,
+           //persist: true,
+            selectMode: 3,
+            onActivate: function(node){},
+            initAjax: {
+                url: api,
+                data: {'fileName': filename, 'field':'Function'}
+            }
+
+        });
+        $("#funTree").dynatree("getTree").reload();
+        $("#freqTree").dynatree({
+            fx: {height: "toggle", duration: 300},
+            autoFocus: false,
+            checkbox: true,
+          //persist: true,
+            selectMode: 3,
+            onActivate: function(node){},
+            initAjax: {
+                url: api,
+                data: {'fileName': filename, 'field':'Frequency'}
+            }
+
+        });
+        $("#freqTree").dynatree("getTree").reload();
+        $("#predTree").dynatree({
+            fx: {height: "toggle", duration: 300},
+            autoFocus: false,
+            checkbox: true,
+         // persist: true,
+            selectMode: 3,
+            onActivate: function(node){},
+            initAjax: {
+                url: api,
+                data: {'fileName': filename, 'field':'Prediction'}
+            }
+
+        });
+        $("#predTree").dynatree("getTree").reload();
+
+        $("#custTree").dynatree({
+            fx: {height: "toggle", duration: 300},
+            autoFocus: false,
+            checkbox: true,
+            // persist: true,
+            selectMode: 3,
+            onActivate: function(node){},
+            initAjax: {
+                url: api,
+                data: {'fileName': filename, 'field':'Custom'}
+            }
+
+        });
+        $("#custTree").dynatree("getTree").reload();
+    }
+    function  sendTree()
+    {
+        var nodes = {};
+        var sNodes = $("#funTree").dynatree("getSelectedNodes");
+        if(sNodes.length != 0)
+        {
+            sNodes.forEach(function(v,i,arr){
+                //alert(v.data.key);
+                var pNode = v.getParent();
+                if( pNode.data.key !== '_1')
+                {
+                    if(typeof nodes[pNode.data.key] === undefined)
+                    {
+                        nodes[pNode.data.key] = v.data.key;
+                    }
+                    else
+                    {
+                        nodes[pNode.data.key] = nodes[pNode.data.key]+','+ v.data.key;
+                    }
+                }
+            });
+
+        }
+        sNodes = $("#freqTree").dynatree("getSelectedNodes");
+        if(sNodes.length != 0)
+        {
+            sNodes.forEach(function(v,i,arr){
+                //alert(v.data.key);
+                var pNode = v.getParent();
+                if( pNode.data.key != '_1')
+                {
+                    if(nodes[pNode.data.key] == undefined)
+                    {
+                        nodes[pNode.data.key] = v.data.key;
+                    }
+                    else
+                    {
+                        nodes[pNode.data.key] = nodes[pNode.data.key]+','+ v.data.key;
+                    }
+                }
+            });
+
+        }
+        sNodes = $("#predTree").dynatree("getSelectedNodes");
+        if(sNodes.length != 0)
+        {
+            sNodes.forEach(function(v,i,arr){
+                //alert(v.data.key);
+                var pNode = v.getParent();
+                if( pNode.data.key != '_1')
+                {
+                    if(nodes[pNode.data.key] == undefined)
+                    {
+                        nodes[pNode.data.key] = v.data.key;
+                    }
+                    else
+                    {
+                        nodes[pNode.data.key] = nodes[pNode.data.key]+','+ v.data.key;
+                    }
+                }
+            });
+
+        }
+        sNodes = $("#custTree").dynatree("getSelectedNodes");
+        if(sNodes.length != 0)
+        {
+            sNodes.forEach(function(v,i,arr){
+                //alert(v.data.key);
+                var pNode = v.getParent();
+                if( pNode.data.key != '_1')
+                {
+                    var dbn = 'cust#'+pNode.data.key;
+                    if(nodes[dbn] == undefined)
+                    {
+                        nodes[dbn] = v.data.key;
+                    }
+                    else
+                    {
+                        nodes[dbn] = nodes[dbn]+','+ v.data.key;
+                    }
+                }
+            });
+
+        }
+        var dbstr = '';
+        for(var k in nodes)
+        {
+            dbstr = dbstr + k+':'+nodes[k]+'|';
+        }
+
+        dbstr = dbstr.replace(/\|$/,'');
+        var filename = $("#FileName").val();
+        var annoName = $("#annoFileName").val();
+        var des = $("#annoDescription").val();
+        //alert(dbstr);
+        $.ajax({
+            url: '/file_check',
+            type: 'get',
+            datatype: 'json',
+            data:{fileName:annoName},
+            success:function (data) {
+                if(data.res == 1)
+                {
+                    $.ajax({
+                        url: '/file_annotate',
+                        //type: 'POST',
+                        data:{fileName:filename,
+                            dbstr:dbstr,
+                            new:annoName,
+                            des:des},
+                        success:function (data) {
+                            if(data.res == 1)
+                            {
+                                $("#annotateFileModal").modal('hide');
+                                window.location.reload();
+                            }
+                            else
+                            {
+                                alert("Annotation error!");
+                            }
+
+                        }
+                    })
+
+                }
+                else if(data.res == 2)
+                {
+                    alert(annoName+" has been existed in this study, please change it to another one!")
+                }
+                
+            }
+        })
+
+    }
+
+    function deselectAll(treeID)
+    {
+        $("#"+treeID).dynatree("getRoot").visit(function(node){
+            node.select(false);
+        });
+        return false;
+    }
+    function selectAll(treeID)
+    {
+        $("#"+treeID).dynatree("getRoot").visit(function(node){
+            node.select(true);
+        });
+
+        return false;
+    }
+</script>
+
+<script>
+    function LoadCustDB()
+    {
+        var api = '/api/ListCustDB';
+        $.getJSON(api, function(result) {
+            var data = result.data;
+            var hg = ['hg19','hg38'];
+            $("#ContentBodyDB").html("");
+            for(var h in hg)
+            {
+                if(data[hg[h]] != undefined)
+                {
+                    $("#ContentBodyDB").append("<div id = '"+hg[h]+"'><p>"+hg[h]+":</p></div>");
+                    for(var db in data[hg[h]])
+                    {
+                        var item = data[hg[h]][db];
+                        $("#"+hg[h]).append( "<span class='badge' title='"+item.description +"'>"+
+                            item.name +
+                            "<span class='glyphicon glyphicon-remove' onclick='RemoveCustDB(\""+hg[h]+"\",\""+item.name+"\",\""+item.filename+"\","+db+")'></span>"+
+                            "</span>");
+                    }
+                    //$("#ContentBodyDB").append("</div>");
+                }
+            }
+
+        });
+    }
+
+    function RemoveCustDB(hg,dbname,fileName,i)
+    {
+        var api = '/api/RemoveCustomDB';
+        var data = {fileName:fileName,hg:hg,dbname:dbname};
+        var msg = "<% if (lan == "eng") { %>Are you sure?<% } else { %>确定删除？<% } %>";
+        if (confirm(msg)==true)
+        {
+            $.getJSON(api, data, function (result) {
+                if(result.res == 1)
+                {
+                    $("#"+hg).children().eq(i+1).remove();
+                }
+            });
+        }
+    }
+
+    $('.db-upload-btn').on('click', function(){
+        var files = $('#db-upload-input').get(0).files;
+        var genome_version = $('#db-hg').val();
+        var description = $('#dbDescription').val();
+        var dbname = $("#dbFileName").val();
+        if(dbname == undefined || dbname == '')
+        {
+            var errMsg = "<% if (lan == "eng") { %>Please enter database name!<% } else { %>请输入数据库名！<% } %>";
+            alert(errMsg)
+        }
+        else
+        {
+            if (files.length > 0){
+                // create a FormData object which will be sent as the data payload in the
+                // AJAX request
+                var formData = new FormData();
+
+                // loop through all the selected files and add them to the formData object
+                formData.append('genome_version', genome_version);
+                if(description == '')
+                {
+                    formData.append('description', 'None');
+                }
+                else
+                {
+                    formData.append('description', description);
+                }
+                formData.append('dbname', dbname);
+                formData.append('uploads', files[0], files[0].name);
+
+
+                $.ajax({
+                    url:'/file_check',
+                    type: 'get',
+                    datatype: 'json',
+                    data:{fileName:files[0].name,db:1},
+                    success: function (data) {
+                        if(data.res == 1)
+                        {
+                            $.ajax({
+                                url: '/file_uploadDB',
+                                type: 'POST',
+                                data: formData,
+                                processData: false,
+                                contentType: false,
+                                success: function(data){
+                                    if(data.res == 1)
+                                    {
+                                        window.location.reload();
+                                    }
+                                    else
+                                    {
+                                        alert("Upload file error!");
+                                    }
+                                },
+                                xhr: function() {
+                                    // create an XMLHttpRequest
+                                    var xhr = new XMLHttpRequest();
+
+                                    // listen to the 'progress' event
+                                    xhr.upload.addEventListener('progress', function(evt) {
+
+                                        if (evt.lengthComputable) {
+                                            // calculate the percentage of upload completed
+                                            var percentComplete = evt.loaded / evt.total;
+                                            percentComplete = parseInt(percentComplete * 100);
+
+                                            // update the Bootstrap progress bar with the new percentage
+                                            $('#db-upload-bar').text(percentComplete + '%');
+                                            $('#db-upload-bar').width(percentComplete + '%');
+
+                                            // once the upload reaches 100%, set the progress bar text to done
+                                            if (percentComplete === 100) {
+                                                $('#db-upload-bar').html('Done');
+                                            }
+
+                                        }
+
+                                    }, false);
+
+                                    return xhr;
+                                }
+                            });
+
+                        }
+                        else if(data.res == 2)
+                        {
+                            var errMsg = "<% if (lan == "eng") { %>"+files[0].name+"has existed!<% } else { %>"+files[0].name+"已存在！<% } %>";
+                            alert(errMsg)
+                        }
+
+                    }
+
+                });
+
+
+
+            }
+        }
+
+    });
+</script>
+
+<script>
+    var dir = '/files';
+    var username = '<%-userName%>';
+    $.getJSON(dir, function(result) {
+        $("#fileList").html("");
+        $.each(result, function(i, field) {
+            if(field.IsDirectory == true)
+            {
+                $("#fileList").prepend(
+                    "<tr class='sortable'>"+
+                    "<td><span class='fa fa-flask' aria-hidden='true'></span></td>" +
+                    "<td>"+field.Name+"</td>" +
+                    "<td>"+field.fileNum+"</td>" +
+                    "<td>"+field.Time+"</td>" +
+                    "<td>"+
+                    "<button type='button' class='btn btn-default btn-sm' onclick='openStudy(\""+field.Name+"\")'><span class='glyphicon glyphicon-folder-open'></span>" + "<% if (lan == 'eng') { %> Open <% } else { %> 打开<% } %>" + "</button>"+
+                    "<button type='button' class='btn btn-default btn-sm' onclick='studyDelete(\""+field.Name+"\",\""+field.fileNum+"\")'><span class='glyphicon glyphicon-remove'></span>" + "<% if (lan == 'eng') { %> Delete <% } else { %> 删除<% } %>" + "</button></td>" +
+                    //"<td><span>尚未导入</span></td>" +
+                    "<td></td>"+
+                    "</tr>"
+                );
+            }
+            else
+            {
+                $("#fileList").append(
+                    "<tr class='sortable'>"+
+                    "<td><span class='glyphicon glyphicon-file'></span></td>" +
+                    "<td id=\"file"+i+"\">"+field.Name+"</td>" +
+                    "<td>"+(field.Size/1048576).toFixed(2)+" MB"+"</td>" +
+                    "<td id=\"variants"+i+"\">0</td>" +
+                    "<td>"+field.Time+"</td>" +
+                    "<td><button type='button' onclick=\"window.location.href='/vcf_viewer?fileName="+field.Name+"'\" id='view-"+i+"' class='btn btn-default btn-sm'><span class='glyphicon glyphicon-cloud'></span>" + "<% if (lan == 'eng') { %> Analyze <% } else { %> 解析<% } %>" + "</button>" +
+                    "<button type='button' id='anno-"+ i +"' onclick=\"funTree('"+username+"','"+field.Name+"')\" class='btn btn-default btn-sm' data-toggle='modal' data-target='#annotateFileModal'><span class='glyphicon glyphicon-list-alt'></span>" + "<% if (lan == 'eng') { %> Annotate <% } else { %> 注释<% } %>"+"</button>" +
+                    "<a href='/file/"+field.Name + "'type='button' id='download-"+i+"' class='btn btn-default btn-download btn-sm'><span class='glyphicon glyphicon-download'></span>" + "<% if (lan == 'eng') { %> Download <% } else { %> 下载<% } %>" + "</a>" <% if (userName !== '' ||(userName === '' && currentDir === '/tmp')) { %> +
+                    "<button type='button' onclick=\"delFile('"+field.Name+"','"+i+"')\" id='delete-"+i+"' class='btn btn-default btn-delete btn-sm'><span class='glyphicon glyphicon-remove'></span>" + "<% if (lan == 'eng') { %> Delete <% } else { %> 删除<% } %>" + "</button></td>" <% } %> +
+                    //"<td><span>尚未导入</span></td>" +
+                    '<td><div class="progress"><div id="progress-bar'+i+'" class="progress-bar" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100"></div></div></td>'+
+                    "</tr>"
+                );
+                pbar(i,field.Name);
+                //variant(i,field.Name);
+
+            }
+        });
+
+
+
+            //funTree(username,field.Name)
+
+    });
+
+</script>
+
+<script>
+    $('.upload-btn').on('click', function(){
+        var files = $('#upload-input').get(0).files;
+        var public = $('#public').val();
+        var genome_version = $('#genome_version').val();
+        var description = $('#description').val();
+        if (files.length > 0){
+            // create a FormData object which will be sent as the data payload in the
+            // AJAX request
+            var formData = new FormData();
+
+            // loop through all the selected files and add them to the formData object
+            formData.append('public', public);
+            formData.append('genome_version', genome_version);
+            if(description == '')
+            {
+                formData.append('description', 'None');
+            }
+            else
+            {
+                formData.append('description', description);
+            }
+            formData.append('uploads', files[0], files[0].name);
+
+
+            $.ajax({
+                url:'/file_check',
+                type: 'get',
+                datatype: 'json',
+                data:{fileName:files[0].name},
+                success: function (data) {
+                    if(data.res == 1)
+                    {
+                        $.ajax({
+                            url: '/file_upload',
+                            type: 'POST',
+                            data: formData,
+                            processData: false,
+                            contentType: false,
+                            success: function(data){
+                                if(data.res == 1)
+                                {
+                                    window.location.reload();
+                                }
+                                else
+                                {
+                                    alert("Upload file error!");
+                                }
+                            },
+                            xhr: function() {
+                                // create an XMLHttpRequest
+                                var xhr = new XMLHttpRequest();
+
+                                // listen to the 'progress' event
+                                xhr.upload.addEventListener('progress', function(evt) {
+
+                                    if (evt.lengthComputable) {
+                                        // calculate the percentage of upload completed
+                                        var percentComplete = evt.loaded / evt.total;
+                                        percentComplete = parseInt(percentComplete * 100);
+
+                                        // update the Bootstrap progress bar with the new percentage
+                                        $('#upload-bar').text(percentComplete + '%');
+                                        $('#upload-bar').width(percentComplete + '%');
+
+                                        // once the upload reaches 100%, set the progress bar text to done
+                                        if (percentComplete === 100) {
+                                            $('#upload-bar').html('Done');
+                                        }
+
+                                    }
+
+                                }, false);
+
+                                return xhr;
+                            }
+                        });
+
+                    }
+                    else if(data.res == 2)
+                    {
+                        alert(files[0].name+" has existed in this study!")
+                    }
+
+                }
+
+            });
+
+
+
+        }
+    });
+    function newStudy()
+    {
+        var studyName = $('#studyName').val();
+        if(studyName == '')
+        {
+            var errMsg = "<% if (lan == "eng") { %>Please enter your study name!<% } else { %>请输入研究名！<% } %>";
+            alert(errMsg);
+        }
+        else
+        {
+            var api = '/newStudy';
+            $.ajax({
+                url: api,
+                type: 'get',
+                datatype: 'json',
+                data:{studyName:studyName},
+                success: function(data)
+                {
+                    if(data.res == 1)
+                    {
+                        window.location.reload();
+                    }
+                    else if(data.res == 2)
+                    {
+                        var errMsg = "<% if (lan == "eng") { %>Study already exist!<% } else { %>研究名已存在！<% } %>";
+                        alert(errMsg);
+                    }
+                    else if(data.res == 0)
+                    {
+                        var errMsg = "<% if (lan == "eng") { %>Error!<% } else { %>新建研究出错！<% } %>";
+                        alert(errMsg);
+                    }
+
+                }
+            });
+        }
+    }
+    function studyDelete(studyName, fileNum)
+    {
+        var api = '/studyDelete';
+        var msg = "<% if (lan == "eng") { %>Are you sure?<% } else { %>确定删除？<% } %>";
+        if (confirm(msg)==true)
+        {
+            $.ajax({
+                url: api,
+                type: 'get',
+                datatype: 'json',
+                data: {studyName: studyName, fileNum: fileNum},
+                success: function (data) {
+                    if (data.res == 1) {
+                        window.location.reload();
+                    }
+                    else if (data.res == 0) {
+                        var errMsg = "<% if (lan == "eng") { %>Error!<% } else { %>删除研究出错！<% } %>";
+                        alert(errMsg);
+                    }
+                    else if (data.res == 2) {
+                        var errMsg = "<% if (lan == "eng") { %>Please delete all the VCF in the study! <% } else { %>请先删除研究下的所有VCF文件！<% } %>";
+                        alert(errMsg);
+                    }
+                }
+
+            });
+        }
+    }
+    function openStudy(studyName)
+    {
+        var api = '/openStudy';
+        $.ajax({
+            url: api,
+            type: 'get',
+            async: false,
+            datatype: 'json',
+            data: {studyName: studyName},
+            success: function (data) {
+                if (data.res == 1) {
+                    window.location.reload();
+                }
+            }
+        });
+    }
+    function closeStudy()
+    {
+        var api = '/closeStudy';
+        $.ajax({
+            url: api,
+            type: 'get',
+            async: false,
+            datatype: 'json',
+            success: function (data) {
+                if (data.res == 1) {
+                    setTimeout(window.location.reload(),500);
+                }
+            }
+        });
+    }
+</script>
+
+<script>
+    function delFile(filename,i) {
+
+            var api = '/file_delete/' + filename;
+            //alert($('#fileList').children().eq(i));
+            var msg = "<% if (lan == "eng") { %>Are you sure?<% } else { %>确定删除？<% } %>";
+            if (confirm(msg)==true) {
+                $.ajax({
+                    url:api,
+                    type:'get',
+                    success:function(data) {
+                        //window.location.reload();
+                        if(data.res == 1)
+                        {
+                            $('#fileList').children().eq(i).remove();
+                        }
+                        else if(data.res == 2)
+                        {
+                            $('#errMsg').append('<span class="text-danger">File not exist!<span>');
+                        }
+                        else
+                        {
+                            $('#errMsg').append('<span class="text-danger">File delete error!<span>');
+                        }
+
+                    }
+                });
+            } else {
+                return false;
+            }
+    };
+</script>
+
+
+<script>
+    function pbar(i,filename){
+
+        var progressbar = $('#progress-bar'+i);
+        var username = '<%-userName%>';
+        var timerId;
+        var startTime = 2000;
+        var percent = 0;
+        var retry = 0;
+        //progressbar.css("background-color","#337ab7");
+        $('#view-'+i).attr('disabled',"true");
+        $('#anno-'+i).attr('disabled',"true");
+        $('#download-'+i).attr('disabled',"true");
+        $('#delete-'+i).attr('disabled',"true");
+        var getPro = function()
+        {
+            var api = '/monitorStat';
+            $.ajax({
+                url: api,
+                data: {fileName:filename,prog:'Import2DB'},
+                type: 'GET',
+                dataType: 'json',
+                timeout:30000,
+                success:function(data){
+                    if(data.percent>=100){
+                        window.clearInterval(timerId);
+                        $('#view-'+i).removeAttr("disabled");
+                        $('#anno-'+i).removeAttr("disabled");
+                        $('#download-'+i).removeAttr("disabled");
+                        $('#delete-'+i).removeAttr("disabled");
+                        variant(i,filename);
+                    }
+                    else
+                    {
+                        if(data.percent - percent < 1)
+                        {
+                            startTime = startTime + 2000;
+                            window.clearInterval(timerId);
+                            timerId = window.setInterval(getPro,startTime);
+                            //alert(startTime);
+                        }
+                        else
+                        {
+                            if(startTime > 2000)
+                            {
+                                startTime = startTime - 1000;
+                                window.clearInterval(timerId);
+                                timerId = window.setInterval(getPro,startTime);
+                            }
+
+                        }
+                        percent = data.percent;
+                    }
+                    progressbar.text(data.status);
+                    progressbar.width(data.percent+'%');
+                    $('#variants'+i).text(accounting.formatNumber(data.loaded));
+
+                },
+                error:function(){
+                    if(retry < 3)
+                    {
+                        window.clearInterval(timerId);
+                        timerId = window.setInterval(getPro,startTime);
+                        retry ++;
+                    }
+                    else
+                    {
+                        window.clearInterval(timerId);
+                        //alert("error!");
+                    }
+
+                }
+            });
+        };
+
+        timerId = window.setInterval(getPro,startTime);
+    };
+
+    function variant(i,filename) {
+        var api = '/variants?fileName=' + filename + '&filter={}';
+        $.ajax({
+            url: api,
+            type: 'GET',
+            dataType: 'json',
+            success:function(data){
+                $('#variants'+i).text(accounting.formatNumber(data.variants));
+                $('#file'+i).attr('title','Description: '+ data.description);
+
+            },
+            error:function(e){
+                console.log(e);
+            }
+        });
+    };
+</script>
+<% include ./footer2.ejs %>

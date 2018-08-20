@@ -1,0 +1,274 @@
+<% include ./header2.ejs %>
+<!--症状诊断页-->
+<div class="row">
+    <!--左侧边栏-->
+    <div class="col-md-4">
+        <script language="javascript">
+            $(document).ready(function() {
+                //初始化左侧症状树形图
+                $.ui.dynatree.nodedatadefaults["icon"] = false;
+                var url = "/api/HPOTree";
+                $("#tree").dynatree({
+                    title: "症状树形图",
+                    fx: {height: "toggle", duration: 200},
+                    autoFocus: false,
+                    checkbox: true,
+                    onActivate: function(node){},
+                    onSelect: function(flag, node){
+                        addSelect(node.data.key, node.data.title);
+                    },
+                    initAjax: {
+                        url: url,
+                        data: {"termID": 'all'}
+                    },
+                    onLazyRead: function (node) {
+                        node.appendAjax({
+                            url: url,
+                            data: {"termID": node.data.key}
+                        });
+                    }
+                });
+            });
+            //显示树形图和隐藏按钮
+            function showTree(){
+                $('#show-tree').hide();
+                $('#hide-tree').show();
+                $('#tree').show();
+            }
+            //隐藏树形图，显示显示按钮
+            function hideTree(){
+                $('#show-tree').show();
+                $('#hide-tree').hide();
+                $('#tree').hide();
+            }
+        </script>
+        <a id="show-tree" href="javascript: void(0);" onclick="showTree()" hidden><%-lan == 'eng' ? 'Show phenotype tree>>':'显示症状树>>'%></a>
+        <a id="hide-tree" href="javascript: void(0);" onclick="hideTree()" ><%-lan == 'eng' ? 'Hide phenotype tree<<':'隐藏症状树<<'%></a>
+        <div class=mainBox id="tree">
+        </div>
+        <script>
+            $(function() {
+                //初始化症状搜索热词图
+                var url = "/api/HotWords";
+                var $myCloud = $("#phenotype-cloud");
+                $.ajax({
+                    url: url,
+                    success: function(words){
+                        $myCloud.jQCloud(words);
+                    }
+                });
+            });
+        </script>
+        <div id="phenotype-cloud-container">
+        <div id="phenotype-cloud" style="height: 15vw;"></div>
+        </div>
+        <script type="text/javascript" src="//ra.revolvermaps.com/0/0/7.js?i=01qc7evm12s&amp;m=0&amp;c=ff0000&amp;cr1=ffffff&amp;sx=0&amp;ds=0" async="async"></script>
+
+        </div>
+    <div class="col-md-8">
+        <% if (lan == 'eng') { %>Recommended<% } else { %>推荐信息<% } %>:
+        <span id="rcmd-0000478" class="badge" onclick="addSelect(this.id.substr(5), this.innerText)">
+            <% if (lan == 'eng') { %>obsolete Abnormality of the ocular region<% } else { %>眼部异常<% } %>
+        </span>
+        <span id="rcmd-0000598" class="badge" onclick="addSelect(this.id.substr(5), this.innerText)">
+            <% if (lan == 'eng') { %>Abnormality of the ear<% } else { %>耳部异常<% } %>
+        </span>
+        <span id="rcmd-0000707" class="badge" onclick="addSelect(this.id.substr(5), this.innerText)">
+            <% if (lan == 'eng') { %>Abnormality of the nervous system<% } else { %>神经系统异常<% } %>
+        </span>
+        <hr>
+        <!--搜索栏-->
+        <div class="row search-area">
+            <script type="text/javascript">
+                $(document).ready(function() {
+                    //初始化症状自动完成搜索栏
+                    var url = "/api/Select";
+                    $("#sel_menu2").select2({
+                        multiple:true,
+                        language: eng == 1? "en":"zh-CN",
+                        placeholder: eng == 1 ? 'Please enter HPO name or HPO ID' : '请输入症状名或症状ID',
+                        ajax:
+                        {
+                            url:url,
+                            dataType: 'json',
+                            delay: 600,
+                            contentType:"application/x-www-form-urlencoded;charset=UTF-8",
+                            data: function (params){
+                                return {
+                                    query: params.term // search term
+                                };
+                            },
+                            processResults: function (data, page)
+                            {
+                                return{
+                                    results: data.items
+                                };
+                            },
+                            cache:true
+                        },
+                        escapeMarkup: function (markup)
+                        {
+                            return markup;
+                        },
+                        minimumInputLength: 2,
+                        //formatInputTooShort:  eng == 1 ? 'Please enter at least 2 characters' : "请输入至少2个字符以进行检索",
+                        //maximumInputLength: 40,
+                        templateResult:formatRepo,
+                        templateSelection:formatRepoSelection,
+                        openOnEnter: false,
+                        allowClear: true
+                    })
+                        .on("select2:select", function(e){//搜索栏中添加一项时，与列表进行同步
+                        insertRow(e.params.data.id.substr(3));
+                    }).on("select2:unselect", function(e){//搜索栏中删除一项时，与列表进行同步
+                        removeRow(e.params.data.id.substr(3));
+                    });
+                });
+                function formatRepo(repo)
+                {
+                    if (repo.loading) return repo.text;
+                    repo.text = repo.name;
+                    var markup = '<div class="select2-results__options" value='+repo.id+'>'
+                        + repo.id+'|'+repo.text+'</div>';
+                    return markup;
+                }
+
+                function formatRepoSelection(repo){
+                    repo.selected = true;
+                    repo.name = repo.id
+                    if(repo.id == null || repo.name == ""){
+                        repo.id = 'Please type items'
+                        repo.name = repo.text
+                    }
+                    return repo.text;
+                }
+
+                //向搜索栏中添加一项，并且与列表进行同步
+                //这是由于从select2外部直接修改标签元素时，不会触发事件，所以需要同步
+                function addSelect(id, name){
+                    var ID = 'HP:' + id;
+                    var $searchBox = $('#sel_menu2');
+                    if ($.inArray(ID, $searchBox.val()) != -1) return;
+                    var op1 = '<option value="'+ID+'" selected>'+name+'</option>'
+                    $searchBox.append(op1).trigger("change");
+                    insertRow(id);
+                }
+
+                //从搜索栏中删除一项，并且与列表进行同步
+                function rmvSelect(id){
+                    var $searchBox = $('#sel_menu2');
+                    var found = 0;
+                    for (var i in $searchBox.children())
+                    {
+                        if ($searchBox.children()[i].value == "HP:" + id)
+                        {
+                            $searchBox.children()[i].remove();
+                            found = 1;
+                            break;
+                        }
+                    }
+                    if (found === 1)
+                    {
+                        $searchBox.trigger('change');
+                        removeRow(id);
+                    }
+                }
+
+                //提交表格。每一个搜索项包含ID和名称。
+                function searchSubmit(){
+                    var form = $("#sel_menu2");
+                    for (var i = 0;i < form.children().length;i++){
+                        form.children()[i].value += '$' + form.children()[i].innerHTML;
+                    }
+                    $('#form1').submit();
+                }
+            </script>
+            <FORM METHOD=GET id='form1' ACTION="/list">
+                <div class="col-md-10 search-div">
+                        <select id="sel_menu2" name="HPO" multiple="multiple" class="form-control" style="width: 100%">
+                        </select>
+                </div>
+                <input id="go-btn" type='button' value="<% if (lan == 'eng') { %>Search<% } else { %>搜索<% } %>" class="btn btn-primary col-md-2 search-btn" onclick='searchSubmit()'>
+            </FORM>
+        </div>
+        <!--列表-->
+        <script type="text/javascript">
+            //列表在一开始是隐藏的
+            $(document).ready(function() {
+                $("#diseaseTable").hide();
+            })
+            //在列表中添加一项
+            function insertRow(id) {
+                $("#table-tip").hide();
+                $("#diseaseTable").show();
+                var url = "/api/NodeInfo";
+                var $table = $('#tableBody');
+                $.ajax({
+                    type: 'GET',
+                    url: url,
+                    data: {termID:id},
+                    success: function (data) {
+                        var row = data;
+                        var newRow = $('<tr role="row" class="color-palette" id="row-hp-' + id + '"></tr>');
+                        var newName = $('<td>' + row.chname + '</td>');
+                        if (row.description == "NULL") row.description = "";
+                        var newDcrp = $('<td>' + row.description + '</td>');
+                        var links = "";
+                        for (var i in row.children) {
+                            links += '<a onclick="addSelect(\'' + row.children[i].key + '\', \'' + row.children[i].chname +
+                                '\')">' + row.children[i].chname + '</a>&nbsp;';
+                        }
+                        var newLeaf = $('<td>' + links + '</td>');
+                        newRow.append(newName);
+                        newRow.append(newDcrp);
+                        newRow.append(newLeaf);
+                        $table.prepend(newRow);
+                    },
+                    error: function () {
+                        alert("网络连接异常");
+                    }
+                });
+            }
+            //在列表中删除一项
+            function removeRow(id) {
+                var $table = $('#tableBody');
+                $table.children('#row-hp-'+id).remove();
+                if ($table.children().length == 0) {
+                    $("#diseaseTable").hide();
+                    $("#table-tip").show();
+                }
+            }
+        </script>
+        <div class="row noMargin">
+            <label id="table-tip">
+                <br/>
+                <br/>
+                <% if (lan == 'eng') { %>
+                Please type in the text area, or click the arrow button in the tree diagram on the left to view detailed info
+                <% } else { %>
+                请在搜索栏中输入，或点击左侧树状图中的箭头按钮，即可显示详细信息
+                <% } %>
+            </label>
+            <table id="diseaseTable" class="table table-bordered table-striped dataTable" role="grid">
+                <thead>
+                <tr role="row">
+                    <th class="col-md-2" title="<% if (lan == 'eng') { %>Name of the phenotype<% } else { %>症状名<% } %>">
+                        <% if (lan == 'eng') { %>Name<% } else { %>名字<% } %>
+                    </th>
+                    <th class="col-md-4" title="<% if (lan == 'eng') { %>Detailed explanation of the phenotype<% } else { %>症状的详细解释<% } %>">
+                        <% if (lan == 'eng') { %>Explanation<% } else { %>描述<% } %>
+                    </th>
+                    <th class="col-md-6" title="<% if (lan == 'eng') { %>Specific phenotypes contained in this phenotype, click to add to the list<% } else { %>该症状所包含的具体症状，点击可添加<% } %>">
+                        <% if (lan == 'eng') { %>Detail<% } else { %>详细<% } %>
+                    </th>
+                </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+
+
+<% include ./footer2.ejs %>

@@ -1,0 +1,940 @@
+<% include ./header2.ejs %>
+<link href="https://cdn.bootcss.com/datatables/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.datatables.net/buttons/1.4.2/css/buttons.dataTables.min.css" rel="stylesheet">
+<link rel="stylesheet" href="<%=static_dir%>/css/myStyle2.css">
+<link rel="stylesheet" href="<%=static_dir%>/css/myStyle.css">
+
+
+<div id="container">
+    <div id="toolbox">
+
+    </div>
+    <div id="showData" class="table-responsive">
+        <img id="loading" style="clear:both; display:block; margin:auto;" src="<%= static_dir %>/img/loading.gif"/>
+    </div>
+</div>
+<script src="https://cdn.bootcss.com/datatables/1.10.15/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.bootcss.com/datatables/1.10.15/js/dataTables.bootstrap.min.js"></script>
+<script src="<%=static_dir%>/js/accounting.min.js"></script>
+<script src="<%=static_dir%>/js/pako.min.js"></script>
+
+<div id="wrapper" class="">
+    <nav class="navbar navbar-inverse navbar-fixed-top" id="sidebar-wrapper" role="navigation">
+        <ul class="nav sidebar-nav" id="cols">
+            <li class="sidebar-brand">
+                <a href=""><i class="fa fa-briefcase"></i> <% if (lan == 'eng') { %> Toolbox<% } else { %> 工具栏<% } %></a>
+            </li>
+
+
+            <li class="sidebar-brand">
+                <div class="col-md-6 info-input">
+                    <span class="fa fa-filter" id="filename-title"><% if (lan == 'eng') { %>Filter<% } else { %> 筛选<% }%></span>
+                </div>
+            </li>
+            <li>
+                <div class="col-md-12 info-input">
+                    <table id="filter-table">
+                        <thead>
+                            <tr>
+                                <td><% if (lan == 'eng') { %>Filter<% } else { %>筛选器<% } %></td>
+                                <td><% if (lan == 'eng') { %>Variants Number<% } else { %>变异位点数<% } %></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td><button type='button' class='btn btn-danger btn-sm' onclick="filterBack()"><span class='fa fa-step-backward'></span><% if (lan == 'eng') { %> Step Backward<% } else { %> 回退一步<% } %></button></td>
+                                <td><button type='button' class='btn btn-warning btn-sm' data-toggle="modal" data-target="#filterModal" onclick="loadFilter()"><span class='fa fa-filter'></span><% if (lan == 'eng') { %> New Filter<% } else { %> 添加筛选<% } %></button></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                </div>
+
+            </li>
+
+        </ul>
+    </nav>
+
+    <div id="page-content-wrapper">
+        <button type="button" class="hamburger animated fadeInLeft is-closed" data-toggle="offcanvas">
+            <span class="hamb-top"></span>
+            <span class="hamb-middle"></span>
+            <span class="hamb-bottom"></span>
+        </button>
+    </div>
+</div>
+
+<div class="modal fade" id="filterModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4><% if (lan == 'eng') { %> Filter <% } else { %> 条件筛选<% } %></h4>
+            </div>
+            <ul class="nav nav-tabs" id="myTab">
+                <li class="active">
+                    <a href="#basicFilter" id='tab-function' data-toggle="tab"><% if (lan == 'eng') { %>BASIC Filter<% } else { %>基本筛选器<% } %></a>
+                </li>
+                <li class="">
+                    <a href="#infoFilter" id='tab-frequency' data-toggle="tab"><% if (lan == 'eng') { %>INFO Filter<% } else { %>信息筛选器<% } %></a>
+                </li>
+                <li class="">
+                    <a href="#formatFilter" id='tab-prediction' data-toggle="tab"><% if (lan == 'eng') { %>FORMAT Filter<% } else { %>格式筛选器<% } %></a>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div class="modal-body tab-pane active" id="basicFilter">
+                    <div id="basic-content" class="wareSort clearfix">
+                        <ul id="sort-b-1">
+                        </ul>
+                        <div class="sortDiv" id="sort-b-2">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-body tab-pane" id="infoFilter">
+                    <div id="info-content"  class="wareSort clearfix">
+                        <ul id="sort-i-1">
+                        </ul>
+                        <div class="sortDiv" id="sort-i-2">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-body tab-pane" id="formatFilter">
+                    <div id="format-content" class="wareSort clearfix">
+                        <ul id="sort-f-1">
+                        </ul>
+                        <div class="sortDiv" id="sort-f-2">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" id="filterButton">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var info = [];
+    var fileName = '<%-fileName%>';
+    var cid;
+    $('#filename-title').append(' ('+fileName+') ');
+    var filterList = [];
+    var api = '/filterHelper';
+    function loadFilter()
+    {
+        $.getJSON(api,
+            {fileName:fileName,field:'filter',item:0},
+            function(data){
+                var i = 0;
+                for(var k1 in data)
+                {
+                    info[k1]= [];
+                    var areaCont = "";
+                    var items = [];
+                    for(var k2 in data[k1])
+                    {
+                        //alert(k2);
+                        info[k1][k2] = data[k1][k2];
+                        items.push(k2);
+
+
+                    }
+                    items = items.sort();
+
+                    for(var i=0;i<items.length;i++)
+                    {
+                        areaCont += '<li onClick="showInfo(\'' + k1 + '\',\'' + items[i] +'\','+ i+');"><a href="javascript:void(0)">' + items[i] + '</a></li>';
+                    }
+
+                    if(k1 == 'BASIC')
+                    {
+                        $('#sort-b-1').html(areaCont);
+                        $('#sort-b-2').hide();
+
+                    }
+                    else if(k1 == 'INFO')
+                    {
+                        $('#sort-i-1').html(areaCont);
+                        $('#sort-i-2').hide();
+                    }
+                    else if(k1 == 'FORMAT')
+                    {
+                        $('#sort-f-1').html(areaCont);
+                        $('#sort-f-2').hide();
+                    }
+                    showInfo(k1,items[0],0);
+                }
+
+            });
+
+    }
+    var Num_select = function(group){return '<select id="sample_field_op_list-'+group+'"><option value="eq">=</option><option value="gt">&gt;</option><option value="gte">≥</option><option value="lt">&lt;</option><option value="lte">≤</option><option value="ne">≠</option></select>'};
+    var Num_input = function(group){return '<input id="sample_filter_value-'+group+'" value="0">'};
+    var String_select = function(group){return '<select id="sample_field_op_list-'+group+'"><option value="in">=</option><option value="nin">≠</option></select>'};
+    var Flag_select = function(group){return '<select id="flag_val-'+group+'"><option value="false">0</option><option value="true" selected>1</option></select>'};
+    var Sample_checkbox = '';
+
+    $.getJSON(api,
+        {fileName:fileName,field:'data',item:0},
+        function(data){
+            for(var s in data['sample'])
+            {
+                Sample_checkbox += '<input type="checkbox" name="sample_checkbox" value="'+data['sample'][s]+'" checked="checked"/>'+data['sample'][s];
+            }
+        });
+
+    function showInfo(k1,k2,i)
+    {
+        cid = info[k1][k2]['ID'];
+        var kid = k2;
+        if(/\./.test(kid))
+        {
+            kid = kid.replace(/\./g,'-');
+        }
+        var areaCont = '<div id="des-info-'+kid+'">';
+        var view = ['Description','Type','Number']
+        for(var k in view)
+        {
+            areaCont += '<p><span>'+view[k]+': </span>'+info[k1][k2][view[k]]+'<\p>';
+        }
+        areaCont += '</div>';
+        areaCont += '<hr />';
+        areaCont += '<div>';
+
+        if(info[k1][k2]['Type'] == 'Integer' || info[k1][k2]['Type'] == 'Float')
+        {
+            areaCont += '<div class="col-md-4 text-left">Filter Name:</div><div class="col-md-8 text-left">'+k2+'</div>';
+            areaCont += '<div class="col-md-4 text-left">Operator:</div><div class="col-md-8 text-left">'+Num_select(k1)+'</div>'
+            areaCont += '<div class="col-md-4 text-left">Values:</div><div class="col-md-8 text-left">'+Num_input(k1)+'</div>';
+        }
+        else if(info[k1][k2]['Type'] == 'Flag')
+        {
+            areaCont += '<div class="col-md-4 text-left">Filter Name:</div><div class="col-md-8 text-left">'+k2+'</div>';
+            areaCont += '<div class="col-md-4 text-left">Operator:</div><div class="col-md-8 text-left">=</div>'
+            areaCont += '<div class="col-md-4 text-left">Values:</div><div class="col-md-8 text-left">'+Flag_select(k1)+'</div>';
+        }
+        else
+        {
+            areaCont += '<div class="col-md-4 text-left">Filter Name:</div><div class="col-md-8 text-left">'+k2+'</div>';
+            areaCont += '<div class="col-md-4 text-left">Operator:</div><div class="col-md-8 text-left">'+String_select(k1)+'</div>';
+
+            areaCont += '<div class="col-md-4 text-left">Values:</div><div class="col-md-8 text-left">'+'<input name="'+k2+'" id="'+kid+'" value="">'+'</div>';
+        }
+
+
+        if(k1 == 'FORMAT')
+        {
+            areaCont += '<div class="col-md-4 text-left">Sample Name(s):</div><div class="col-md-8 text-left">'+Sample_checkbox+'</div>';
+        }
+        areaCont += '</div><br>';
+        areaCont += '<div>';
+        areaCont += '<div class="col-md-12 text-center"><input type="button" id="addFilter-'+kid+'" onClick="runFilter(\''+k1+'\',\''+k2+'\',\''+info[k1][k2]['ID']+'\',\''+info[k1][k2]['Type']+'\')" class="btn btn-primary"  value="Run Filter"></div>';
+        areaCont += '</div>';
+        if(k1 == 'BASIC')
+        {
+            $("#sort-b-1 li").eq(i).addClass("active").siblings("li").removeClass("active");
+            $("#sort-b-2").html(areaCont).show();
+        }
+        else if(k1 == 'INFO')
+        {
+            $("#sort-i-1 li").eq(i).addClass("active").siblings("li").removeClass("active");
+            $("#sort-i-2").html(areaCont).show();
+        }
+        else if(k1 == 'FORMAT')
+        {
+            $("#sort-f-1 li").eq(i).addClass("active").siblings("li").removeClass("active");
+            $("#sort-f-2").html(areaCont).show();
+        }
+        if(info[k1][k2]['Type'] == 'String')
+        {
+            initSelect(k2);
+        }
+
+    }
+    function initSelect(id)
+    {
+        $.getJSON(api,
+            {fileName:fileName,field:'range',item:id},
+            function(data){
+                if(/\./.test(id))
+                {
+                    id = id.replace(/\./g,'-');
+                }
+                if(data.res == 0)
+                {
+                    $('#des-info-'+id).append('<p class="text-danger text-justify"><span class="label label-danger">Tips: </span>No variant contains this information.</p>');
+                    $('#' + id).prop("disabled","disabled");
+                    $('#addFilter-'+id).prop("disabled","disabled");
+
+
+                }
+                else
+                {
+                    var d = data.sort();
+
+                    $('#' + id).select2({
+                        data: d,
+                        multiple: true,
+                        allowClear:true
+                    });
+                }
+
+
+            });
+
+    }
+    function runFilter(group,vid,id,type)
+    {
+        var opt = '';
+        var val;
+        var samples = '';
+        if(type == 'Flag')
+        {
+            val = $('#flag_val-'+group).val();
+            opt = 'exists';
+
+        }
+        else if(type == 'Integer' || type == 'Float')
+        {
+            val = $('#sample_filter_value-'+group).val();
+            opt = $('#sample_field_op_list-'+group).val();
+        }
+        else
+        {
+            opt = $('#sample_field_op_list-'+group).val();
+            if(/\./.test(vid))
+            {
+                vid = vid.replace(/\./g,'-');
+            }
+            var data = $('#'+vid).select2('data');
+            var eles = [];
+            for(var d in data)
+            {
+                eles.push(data[d]['text']);
+            }
+            val = eles.join(',');
+        }
+        if(group == 'FORMAT')
+        {
+            var eles = [];
+            $("[name='sample_checkbox']").each(function(){
+                if($(this).prop("checked"))
+                {
+                    eles.push($(this).val());
+                }
+
+            });
+            samples = eles.join(',');
+        }
+        var url = '/filters';
+
+        $.getJSON(url,
+            {id:id,opt:opt,val:val,sample:samples},function (data) {
+                //alert(JSON.stringify(data));
+                var title = vid + " "+opt + " "+val;
+                if(filterList.length == 0)
+                {
+                    variants(fileName,vid,JSON.stringify(data),title);
+                    loadTable(JSON.stringify(data),id,1);
+                    filterList.push(JSON.stringify(data));
+
+                }
+                else
+                {
+                    filterList.push(JSON.stringify(data));
+                    var jsonstr = '{"$and":['+filterList.join(',')+']}';
+                    variants(fileName,vid,jsonstr,title);
+                    loadTable(jsonstr,id,1);
+
+                }
+
+            });
+
+    }
+    function loadTable(filter,id,flag)
+    {
+        var url = '/file_analyze';
+        var index = 0;
+        //alert(id);
+        $.get(url,{fileName:fileName,filter:filter},function (data) {
+
+            if(typeof data.res !== 'undefined')
+            {
+                window.location.href = '/gene_diag';
+            }
+            else if(data.length > 0)
+            {
+                var tableData = new Array(data.length);
+                for (var i = 0; i < data.length; i++)
+                {
+                    var result = JSON.parse(pako.inflate(atob(data[i].binData), { to: 'string' }));
+                    //var result = JSON.parse(data[i]);
+                    var elems = new Array(cols.length);
+                    for (var j = 0; j < cols.length; j++)
+                    {
+
+                        if(typeof(result[cols[j]]) == 'undefined')
+                        {
+                            elems[j] = "NA";
+                        }
+                        else if(cols[j] == 'ID' && /^rs/.test(result[cols[j]]))
+                        {
+
+                                if(/\;/.test(result[cols[j]]))
+                                {
+                                    var items = result[cols[j]].split(";");
+                                    for(var m=0;m<items.length;m++)
+                                    {
+                                        elems[j] += '<a href="https://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs='+items[m]+'" target="_blank">'+items[m]+'</a> ';
+                                    }
+                                }
+                                else
+                                {
+                                    elems[j] = '<a href="https://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs='+result[cols[j]]+'" target="_blank">'+result[cols[j]]+'</a>';
+                                }
+
+                        }
+                        else if(cols[j] == 'POS')
+                        {
+                            elems[j] = accounting.formatNumber(result[cols[j]]);
+                        }
+                        else
+                        {
+                            elems[j] = result[cols[j]];
+                        }
+                        if(cols[j] == id)
+                        {
+                            index = j;
+                        }
+                    }
+                    tableData[i] = elems;
+                }
+                $('#vcf').dataTable().fnClearTable();   //将数据清除
+                $('#vcf').dataTable().fnAddData(tableData); //重新绑定数据
+                //$('#vcf').dataTable().column(index)
+
+
+            }
+            else
+            {
+                $('#vcf').dataTable().fnClearTable(); //将数据清除
+            }
+            if(flag == 1)
+            {
+                var table = $('#vcf').DataTable();
+                table.column(index).visible(true);
+                $('.toggle-vis').eq(index).prop("checked","checked");
+
+
+            }
+            else
+            {
+                if(index >= 9)
+                {
+                    var table = $('#vcf').DataTable();
+                    table.column(index).visible(false);
+                    $('.toggle-vis').eq(index).prop("checked",false);
+                }
+
+            }
+        });
+    }
+    function filterBack()
+    {
+        var len = $('#filter-table tbody tr').length;
+        if(len == 1)
+        {
+            var msg = "<% if (lan == "eng") { %>No more filters!<% } else { %>没有筛选器了！<% } %>";
+            alert(msg);
+        }
+        else
+        {
+            var msg = "<% if (lan == "eng") { %>Are you sure to cancel?<% } else { %>确定撤销筛选器？<% } %>";
+            if(confirm(msg) == true) {
+                $('#filter-table tbody tr:last').remove();
+                filterList.pop();
+                if (filterList.length > 1)
+                {
+                    var jsonstr = '{"$and":[' + filterList.join(',') + ']}';
+                    loadTable(jsonstr,cid,0);
+                }
+                else if(filterList.length == 1)
+                {
+                    loadTable(filterList[0],cid,0);
+                }
+                else
+                {
+                    loadTable('{}',cid,0);
+                }
+            }
+        }
+    }
+    function exportCSV()
+    {
+        var filterStr;
+        if (filterList.length > 1)
+        {
+            filterStr = '{"$and":[' + filterList.join(',') + ']}';
+        }
+        else if(filterList.length == 1)
+        {
+            filterStr = filterList[0];
+        }
+        else
+        {
+            filterStr = '{}';
+        }
+	//alert(filterStr);
+        var api = '/export_csv?fileName='+fileName+'&filter='+filterStr;
+        window.open(api);
+    }
+
+</script>
+
+<div class="modal fade" id="colsModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4><% if (lan == 'eng') { %> Customize Columns <% } else { %> 自定义列<% } %></h4>
+            </div>
+            <div class="modal-body" id="cols-body">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="configModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4><% if (lan == 'eng') { %> Configure <% } else { %> 配置<% } %></h4>
+            </div>
+            <div class="modal-body">
+                <!--<div class="config-modal" id="config-general">
+                    <h4><% if (lan == 'eng') { %> General <% } else { %> 通用配置<% } %></h4>
+                    <% if (lan == 'eng') { %> MAX Displayed Variants <% } else { %> 最大显示位点数 <% } %>
+                    <input type="text" id="maxVariants" name="maxVariants" value="">
+                </div>-->
+                <div class="config-modal" id="config-index">
+                    <h4><% if (lan == 'eng') { %> Indexes <% } else { %> 索引配置<% } %></h4>
+                    <div id="config-index-scroll">
+                        <h4><% if (lan == 'eng') { %> BASIC <% } else { %> 基本<% } %></h4>
+                        <div class="config-modal-content" id="config-BASIC">
+                        </div>
+                        <h4><% if (lan == 'eng') { %> INFO <% } else { %> 信息<% } %></h4>
+                        <div class="config-modal-content" id="config-INFO">
+                        </div>
+                        <h4><% if (lan == 'eng') { %> FORMAT <% } else { %> 格式<% } %></h4>
+                        <div class="config-modal-content" id="config-FORMAT">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        var trigger = $('.hamburger');
+
+        trigger.click(function () {
+            hamburger_cross();
+        });
+
+        function hamburger_cross() {
+
+            if (trigger.hasClass('is-open')) {
+                trigger.removeClass('is-open');
+                trigger.addClass('is-closed');
+                trigger.css('left','2px');
+                isClosed = false;
+            } else {
+                trigger.removeClass('is-closed');
+                trigger.addClass('is-open');
+                trigger.css('left','402px');
+                isClosed = true;
+            }
+        }
+
+        $('[data-toggle="offcanvas"]').click(function () {
+            $('#wrapper').toggleClass('toggled');
+        });
+
+
+    });
+</script>
+
+
+<script>
+    function variants(filename,filtername,filter,title)
+    {
+        var api = '/variants?fileName='+filename+'&filter='+filter;
+        $.getJSON(api, function (result) {
+            var vtr = document.createElement('tr');
+            var vtd1 = document.createElement('td');
+            vtd1.innerHTML = filtername;
+            vtd1.title = title;
+            vtr.appendChild(vtd1);
+            var vtd2 = document.createElement('td');
+            vtd2.innerHTML = accounting.formatNumber(result.variants);
+            vtr.appendChild(vtd2);
+            $('#filter-table tbody').append(vtr);
+        });
+    }
+</script>
+
+<script>
+    var cols = [];
+    var filter = '<%-filter%>';
+    variants(fileName,'None',filter,'None');
+    var dir = "/file_analyze?fileName="+fileName+"&filter="+filter;
+    var header_json = {};
+    var head_url = "/table_header?fileName="+fileName;
+
+
+    $.getJSON(head_url, function (data) {
+        if(typeof data.res !== 'undefined')
+        {
+            window.location.href = '/gene_diag';
+        }
+        else
+        {
+            header_json = data;
+
+            for (var key in header_json) {
+                if (cols.indexOf(key) === -1) {
+                    cols.push(key);
+                }
+            }
+
+            $.getJSON(dir, function (data) {
+
+
+                cols = cols.sort();
+                var array = ["CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER","Samples","#_Samples"];
+                for (var i = array.length - 1; i >= 0; --i) {
+                    var col = array[i];
+                    var idx = cols.indexOf(col);
+                    if (idx >= 0) {
+                        cols.splice(idx, 1);
+                        cols.unshift(col);
+                    }
+                }
+
+                //cols.sort();
+
+                var table = document.createElement("table");
+                table.setAttribute('id', 'vcf');
+                table.setAttribute('class', 'table table-striped table-bordered');
+
+                //col table
+                var ctable = document.createElement("table");
+                ctable.setAttribute('id', 'cols');
+                ctable.setAttribute('class', 'table table-striped table-bordered');
+                var cthead = document.createElement("thead")
+                var ctr = document.createElement('tr');
+                cthead.appendChild(ctr);
+                var cth = document.createElement("th");
+                cth.innerHTML = '<input type=\"checkbox\" id=\"checkAll\"/>';
+                ctr.appendChild(cth);
+
+                var cth1 = document.createElement("th");
+                cth1.innerHTML = 'Name';
+                ctr.appendChild(cth1);
+
+                var cth2 = document.createElement("th");
+                cth2.innerHTML = 'Description';
+                ctr.appendChild(cth2);
+
+                var ctbody = document.createElement('tbody');
+
+                var thead = document.createElement("thead")
+                var tr = document.createElement('tr');
+                thead.appendChild(tr);
+                var VisList = [];
+                for (var i = 0; i < cols.length; i++) {
+                    var th = document.createElement("th");
+                    var ctr2 = document.createElement('tr');
+                    ctbody.appendChild(ctr2);
+
+                    th.innerHTML = cols[i];
+                    th.title = header_json[cols[i]]['Description'];
+                    var ctd = document.createElement("td");
+                    if(header_json[cols[i]]['Visiable'])
+                    {
+
+                        ctd.innerHTML = '<input type="checkbox" name="checkList" class="toggle-vis" checked data-column="'+i+'"/>';
+
+                    }
+                    else
+                    {
+                        ctd.innerHTML = '<input type="checkbox" name="checkList" class="toggle-vis" data-column="'+i+'"/>';
+                        VisList.push(i);
+                    }
+                    ctr2.appendChild(ctd);
+
+                    tr.appendChild(th);
+
+                    var ctd1 = document.createElement("td");
+                    ctd1.innerHTML = cols[i];
+                    ctr2.appendChild(ctd1);
+                    var ctd2 = document.createElement("td");
+                    ctd2.innerHTML = th.title;
+                    ctr2.appendChild(ctd2);
+
+                }
+
+                ctable.appendChild(cthead);
+                ctable.appendChild(ctbody);
+                $('#cols-body').append(ctable);
+                var tbody = document.createElement('tbody');
+
+                for (var i = 0; i < data.length; i++) {
+                    var result = JSON.parse(pako.inflate(atob(data[i].binData), { to: 'string' }));
+                    //var result = JSON.parse(data[i]);
+                    var tr = document.createElement('tr');
+                    for (var j = 0; j < cols.length; j++) {
+                        var tabCell = tr.insertCell(-1);
+                        if(typeof(result[cols[j]]) == 'undefined')
+                        {
+                            tabCell.innerHTML = 'NA';
+                        }
+                        else if(cols[j] == 'ID' && /^rs/.test(result[cols[j]]))
+                        {
+
+                            if(/\;/.test(result[cols[j]]))
+                            {
+                                var items = result[cols[j]].split(";");
+                                for(var m=0;m<items.length;m++)
+                                {
+                                    tabCell.innerHTML += '<a href="https://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs='+items[m]+'" target="_blank">'+items[m]+'</a> ';
+                                }
+                            }
+                            else
+                            {
+                                tabCell.innerHTML = '<a href="https://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs='+result[cols[j]]+'" target="_blank">'+result[cols[j]]+'</a>';
+                            }
+                        }
+                        else if(cols[j] == 'POS')
+                        {
+                            tabCell.innerHTML = accounting.formatNumber(result[cols[j]]);
+                        }
+                        else
+                        {
+                            tabCell.innerHTML = result[cols[j]];
+                        }
+
+                    }
+                    tbody.appendChild(tr);
+                }
+
+                table.appendChild(thead);
+                table.appendChild(tbody);
+
+                var divContainer = document.getElementById("showData");
+                divContainer.innerHTML = '';
+                $("#toolbox").append('<a href="javascript:void(0);" title="<% if (lan == "eng") { %>Columns<% } else { %>隐藏/显示列<% } %>" data-toggle=\'modal\' data-target=\'#colsModal\'><span class="fa fa-table"></span></a>');
+                $("#toolbox").append('<a href="javascript:void(0);" id="panel" title="<% if (lan == "eng") { %>Toolbox<% } else { %>工具栏<% } %>" ><span class="fa fa-briefcase"></span></a>');
+                //$("#toolbox").append('<a href="#" title="<% if (lan == "eng") { %>Print<% } else { %>打印<% } %>"><span class="fa fa-print"></span></a>');
+                $("#toolbox").append('<a href="javascript:void(0);" onclick="exportCSV()" title="<% if (lan == "eng") { %>Export<% } else { %>导出<% } %>"><span class="fa fa-download"></span></a>');
+                $("#toolbox").append('<a href="javascript:void(0);" title="<% if (lan == "eng") { %>Configure<% } else { %>配置<% } %>" data-toggle=\'modal\' data-target=\'#configModal\'><span class="fa fa-cog"></span></a>');
+                divContainer.appendChild(table);
+
+                var tab = $('#vcf').DataTable({
+                    "scrollX": true,
+                    "searching": true,
+                    "deferRender": true,
+                    "pageLength": 10,
+                    "lengthMenu": [[10, 25, 50, 100, 500, 1000, -1], [10, 25, 50, 100, 500, 1000, "All"]],
+                    "columnDefs": [
+                        {
+                            "targets": VisList,
+                            "visible": false,
+                            "searchable": false
+                        }],
+
+                });
+                $("#loading").remove();
+                var elems = ['BASIC','INFO','FORMAT'];
+                //index table
+                var index_json = {};
+                var index_url = "/index_status?fileName="+fileName;
+                $.getJSON(index_url, function (result) {
+                    index_json = result;
+                    for(var i=0;i<elems.length;i++)
+                    {
+                        var ctable = document.createElement("table");
+                        ctable.setAttribute('id', elems[i]);
+                        ctable.setAttribute('class', 'table table-striped table-bordered');
+                        var cthead = document.createElement("thead")
+                        var ctr = document.createElement('tr');
+                        cthead.appendChild(ctr);
+                        var cth = document.createElement("th");
+                        cth.setAttribute("width","50%");
+                        cth.innerHTML = 'Name';
+                        ctr.appendChild(cth);
+
+                        var cth1 = document.createElement("th");
+                        cth1.innerHTML = 'Status';
+                        cth1.setAttribute("width","25%");
+                        ctr.appendChild(cth1);
+
+                        var cth2 = document.createElement("th");
+                        cth2.innerHTML = 'Operation';
+                        cth2.setAttribute("width","25%");
+                        ctr.appendChild(cth2);
+
+                        var ctbody = document.createElement('tbody');
+                        for(var j in index_json[elems[i]])
+                        {
+                            var ctr2 = document.createElement('tr');
+                            ctbody.appendChild(ctr2);
+
+                            var ctd = document.createElement("td");
+                            ctd.innerHTML = index_json[elems[i]][j]['ID'];
+
+                            ctr2.appendChild(ctd);
+
+                            var ctd1 = document.createElement("td");
+                            ctd1.setAttribute('id',elems[i]+'-'+index_json[elems[i]][j]['ID']);
+                            var ctd2 = document.createElement("td");
+                            if(index_json[elems[i]][j]['status'] == 1)
+                            {
+                                ctd1.innerHTML = '<span class="label label-success">Ready</span>';
+                                ctd2.innerHTML = '<label><input name="'+elems[i]+'-'+index_json[elems[i]][j]['ID']+'" type="radio" value="1" checked/>On </label> '+'<label><input name="'+elems[i]+'-'+index_json[elems[i]][j]['ID']+'" type="radio" value="0" />Off </label> ';
+                            }
+                            else
+                            {
+                                ctd1.innerHTML = '<span class="label label-danger">No index</span>';
+                                ctd2.innerHTML = '<label><input name="'+elems[i]+'-'+index_json[elems[i]][j]['ID']+'" type="radio" value="1" />On </label> '+'<label><input name="'+elems[i]+'-'+index_json[elems[i]][j]['ID']+'" type="radio" value="0" checked/>Off </label> ';
+                            }
+                            ctr2.appendChild(ctd1);
+                            ctr2.appendChild(ctd2);
+
+                        }
+
+                        ctable.appendChild(cthead);
+                        ctable.appendChild(ctbody);
+                        $('#config-'+elems[i]).append(ctable);
+                    }
+                    //radio改变事件捕捉
+                    $(":radio").click(function(){
+                        var value = $(this).val();
+                        var name = $(this).attr('name');
+                        var api = '/index_build?fileName='+fileName+'&mode='+value+'&field='+name;
+                        var msg = "<% if (lan == "eng") { %>Are you sure?<% } else { %>确定改变索引？<% } %>";
+                        if (confirm(msg)==true) {
+
+                            $.ajax({
+                                url:api,
+                                type:'GET',
+                                processData: false,
+                                contentType: false,
+                                success:function(data) {
+                                    if(data.res == 1)
+                                    {
+                                        if(value == 1)
+                                        {
+                                            $("#"+name).html('<span class="label label-success">Ready</span>');
+                                        }
+                                        else
+                                        {
+                                            $("#"+name).html('<span class="label label-danger">No index</span>');
+                                        }
+                                    }
+                                }
+                            });
+                        } else {
+                            return false;
+                        }
+                    });
+                });
+
+
+                //显示工具栏
+                $('#panel').click(function () {
+
+                    var trigger = $('.hamburger');
+                    if(trigger.hasClass('is-closed'))
+                    {
+                        trigger.removeClass('is-closed');
+                        trigger.addClass('is-open');
+                        trigger.css('left','402px');
+                        $('#wrapper').toggleClass('toggled');
+                    }
+                    else
+                    {
+                        trigger.removeClass('is-open');
+                        trigger.addClass('is-closed');
+                        trigger.css('left','2px');
+                        $('#wrapper').toggleClass('toggled');
+                    }
+
+                });
+                //cols table checkbox全选
+                $("#checkAll").on("click", function () {
+                    if ($(this).prop("checked") === true) {
+                        $("input[name='checkList']").prop("checked", $(this).prop("checked"));
+                        $('#cols tbody tr').addClass('selected');
+                        for (var i = 0; i < cols.length; i++)
+                        {
+                            var column = tab.column(i);
+                            column.visible(true);
+                        }
+
+                    } else {
+                        $("input[name='checkList']").prop("checked", false);
+                        $('#cols tbody tr').removeClass('selected');
+                        for (var i = 0; i < cols.length; i++)
+                        {
+                            var column = tab.column(i);
+                            column.visible(false);
+                        }
+                    }
+                });
+
+                //显示隐藏列
+                $('.toggle-vis').on('change', function (e) {
+                    e.preventDefault();
+                    //console.log($(this).attr('data-column'));
+                    if($(this).prop("checked") === true)
+                    {
+                        var column = tab.column($(this).attr('data-column'));
+                        column.visible(true);
+                    }
+                    else
+                    {
+                        var column = tab.column($(this).attr('data-column'));
+                        column.visible(false);
+                    }
+
+                });
+
+
+            });
+
+        }
+
+
+    });
+    //console.log(cols);
+</script>
+
+
+
+<% include ./footer2.ejs %>

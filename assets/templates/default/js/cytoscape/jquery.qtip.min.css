@@ -1,0 +1,261 @@
+.qtip {
+	padding: 0px; left: -28000px; top: -28000px; line-height: 12px; font-size: 10.5px; display: none; position: absolute; direction: ltr; min-width: 50px; max-width: 280px; box-shadow: none;
+}
+.qtip-content {
+	padding: 5px 9px; text-align: left; overflow: hidden; position: relative; -ms-word-wrap: break-word;
+}
+.qtip-titlebar {
+	border-width: 0px 0px 1px; padding: 5px 35px 5px 10px; overflow: hidden; font-weight: 700; position: relative;
+}
+.qtip-titlebar + .qtip-content {
+	border-top-width: 0px !important;
+}
+.qtip-close {
+	border: 1px solid transparent; top: -9px; right: -9px; position: absolute; cursor: pointer;
+}
+.qtip-titlebar .qtip-close {
+	top: 50%; right: 4px; margin-top: -9px;
+}
+* html .qtip-titlebar .qtip-close {
+	top: 16px;
+}
+.qtip-titlebar .ui-icon {
+	text-indent: -1000em; display: block; direction: ltr;
+}
+.qtip-icon .ui-icon {
+	text-indent: -1000em; display: block; direction: ltr;
+}
+.qtip-icon {
+	border-radius: 3px; text-decoration: none; -webkit-border-radius: 3px; -moz-border-radius: 3px;
+}
+.qtip-icon .ui-icon {
+	border-radius: 3px; text-decoration: none; -webkit-border-radius: 3px; -moz-border-radius: 3px;
+}
+.qtip-icon .ui-icon {
+	background: no-repeat -100em -100em; font: bold 10px/13px Tahoma, sans-serif; width: 18px; height: 14px; text-align: center; color: inherit; text-indent: 0px; font-size-adjust: none; font-stretch: normal;
+}
+.qtip-focus {
+	
+}
+.qtip-hover {
+	
+}
+.qtip-default {
+	border: 1px solid rgb(241, 208, 49); color: rgb(85, 85, 85); background-color: rgb(255, 255, 163);
+}
+.qtip-default .qtip-titlebar {
+	background-color: rgb(255, 239, 147);
+}
+.qtip-default .qtip-icon {
+	background: rgb(241, 241, 241); border-color: rgb(204, 204, 204); color: rgb(119, 119, 119);
+}
+.qtip-default .qtip-titlebar .qtip-close {
+	border-color: rgb(170, 170, 170); color: rgb(17, 17, 17);
+}
+.qtip-light {
+	border-color: rgb(226, 226, 226); color: rgb(69, 69, 69); background-color: rgb(255, 255, 255);
+}
+.qtip-light .qtip-titlebar {
+	background-color: rgb(241, 241, 241);
+}
+.qtip-dark {
+	border-color: rgb(48, 48, 48); color: rgb(243, 243, 243); background-color: rgb(80, 80, 80);
+}
+.qtip-dark .qtip-titlebar {
+	background-color: rgb(64, 64, 64);
+}
+.qtip-dark .qtip-icon {
+	border-color: rgb(68, 68, 68);
+}
+.qtip-dark .qtip-titlebar .ui-state-hover {
+	border-color: rgb(48, 48, 48);
+}
+.qtip-cream {
+	border-color: rgb(249, 233, 142); color: rgb(162, 125, 53); background-color: rgb(251, 247, 170);
+}
+.qtip-cream .qtip-titlebar {
+	background-color: rgb(240, 222, 125);
+}
+.qtip-cream .qtip-close .qtip-icon {
+	background-position: -82px 0px;
+}
+.qtip-red {
+	border-color: rgb(217, 82, 82); color: rgb(145, 35, 35); background-color: rgb(247, 139, 131);
+}
+.qtip-red .qtip-titlebar {
+	background-color: rgb(240, 109, 101);
+}
+.qtip-red .qtip-close .qtip-icon {
+	background-position: -102px 0px;
+}
+.qtip-red .qtip-icon {
+	border-color: rgb(217, 82, 82);
+}
+.qtip-red .qtip-titlebar .ui-state-hover {
+	border-color: rgb(217, 82, 82);
+}
+.qtip-green {
+	border-color: rgb(144, 217, 63); color: rgb(63, 98, 25); background-color: rgb(202, 237, 158);
+}
+.qtip-green .qtip-titlebar {
+	background-color: rgb(176, 222, 120);
+}
+.qtip-green .qtip-close .qtip-icon {
+	background-position: -42px 0px;
+}
+.qtip-blue {
+	border-color: rgb(173, 217, 237); color: rgb(94, 153, 189); background-color: rgb(229, 246, 254);
+}
+.qtip-blue .qtip-titlebar {
+	background-color: rgb(208, 233, 245);
+}
+.qtip-blue .qtip-close .qtip-icon {
+	background-position: -2px 0px;
+}
+.qtip-shadow {
+	box-shadow: 1px 1px 3px 1px rgba(0,0,0,0.15); -webkit-box-shadow: 1px 1px 3px 1px rgba(0, 0, 0, .15); -moz-box-shadow: 1px 1px 3px 1px rgba(0, 0, 0, .15);
+}
+.qtip-rounded {
+	border-radius: 5px; -webkit-border-radius: 5px; -moz-border-radius: 5px;
+}
+.qtip-tipsy {
+	border-radius: 5px; -webkit-border-radius: 5px; -moz-border-radius: 5px;
+}
+.qtip-bootstrap {
+	border-radius: 5px; -webkit-border-radius: 5px; -moz-border-radius: 5px;
+}
+.qtip-rounded .qtip-titlebar {
+	border-radius: 4px 4px 0px 0px; -webkit-border-radius: 4px 4px 0 0; -moz-border-radius: 4px 4px 0 0;
+}
+.qtip-youtube {
+	background: -ms-linear-gradient(rgb(74, 74, 74) 0px, rgb(0, 0, 0) 100%) rgb(74, 74, 74); border-width: 0px; border-radius: 2px; color: rgb(255, 255, 255); box-shadow: 0px 0px 3px #333; -webkit-border-radius: 2px; -moz-border-radius: 2px; -webkit-box-shadow: 0 0 3px #333; -moz-box-shadow: 0 0 3px #333;
+}
+.qtip-youtube .qtip-titlebar {
+	background-color: rgba(0, 0, 0, 0);
+}
+.qtip-youtube .qtip-content {
+	font: 12px/normal arial, sans-serif; padding: 0.75em; font-size-adjust: none; font-stretch: normal;
+}
+.qtip-youtube .qtip-icon {
+	border-color: rgb(34, 34, 34);
+}
+.qtip-youtube .qtip-titlebar .ui-state-hover {
+	border-color: rgb(48, 48, 48);
+}
+.qtip-jtools {
+	background: -ms-linear-gradient(rgb(113, 113, 113), rgb(35, 35, 35)) rgba(0, 0, 0, 0.7); border-radius: 2px; border: 2px solid rgba(241, 241, 241, 1); border-image: none; box-shadow: 0px 0px 12px #333; -webkit-border-radius: 2px; -moz-border-radius: 2px; -webkit-box-shadow: 0 0 12px #333; -moz-box-shadow: 0 0 12px #333;
+}
+.qtip-jtools .qtip-titlebar {
+	background-color: transparent;
+}
+.qtip-jtools .qtip-content {
+	
+}
+.qtip-jtools .qtip-titlebar {
+	background: none; border: 0px dashed transparent; border-image: none; color: rgb(255, 255, 255);
+}
+.qtip-jtools .qtip-content {
+	background: none; border: 0px dashed transparent; border-image: none; color: rgb(255, 255, 255);
+}
+.qtip-jtools .qtip-icon {
+	border-color: rgb(85, 85, 85);
+}
+.qtip-jtools .qtip-titlebar .ui-state-hover {
+	border-color: rgb(51, 51, 51);
+}
+.qtip-cluetip {
+	border: 0px dashed transparent; border-image: none; color: rgb(17, 17, 17); box-shadow: 4px 4px 5px rgba(0,0,0,0.4); background-color: rgb(217, 217, 194); -webkit-box-shadow: 4px 4px 5px rgba(0, 0, 0, .4); -moz-box-shadow: 4px 4px 5px rgba(0, 0, 0, .4);
+}
+.qtip-cluetip .qtip-titlebar {
+	border: 0px dashed transparent; border-image: none; color: rgb(255, 255, 255); background-color: rgb(135, 135, 106);
+}
+.qtip-cluetip .qtip-icon {
+	border-color: rgb(128, 128, 100);
+}
+.qtip-cluetip .qtip-titlebar .ui-state-hover {
+	border-color: rgb(105, 105, 82); color: rgb(105, 105, 82);
+}
+.qtip-tipsy {
+	background: rgba(0, 0, 0, 0.87); border: 0px solid transparent; border-image: none; color: rgb(255, 255, 255); line-height: 16px; font-family: "Lucida Grande",sans-serif; font-size: 11px; font-weight: 700; text-shadow: 0px 1px #000;
+}
+.qtip-tipsy .qtip-titlebar {
+	padding: 6px 35px 0px 10px; background-color: transparent;
+}
+.qtip-tipsy .qtip-content {
+	padding: 6px 10px;
+}
+.qtip-tipsy .qtip-icon {
+	border-color: rgb(34, 34, 34); text-shadow: none;
+}
+.qtip-tipsy .qtip-titlebar .ui-state-hover {
+	border-color: rgb(48, 48, 48);
+}
+.qtip-tipped {
+	border-radius: 3px; border: 3px solid rgb(149, 159, 169); border-image: none; color: rgb(69, 69, 69); font-family: serif; font-weight: 400; background-color: rgb(249, 249, 249); -webkit-border-radius: 3px; -moz-border-radius: 3px;
+}
+.qtip-tipped .qtip-titlebar {
+	background: -ms-linear-gradient(rgb(58, 121, 184), rgb(46, 98, 157)) rgb(58, 121, 184); color: rgb(255, 255, 255); border-bottom-width: 0px;
+}
+.qtip-tipped .qtip-icon {
+	background: rgb(40, 85, 137); border: 2px solid rgb(40, 85, 137); border-image: none;
+}
+.qtip-tipped .qtip-icon .ui-icon {
+	color: rgb(85, 85, 85); background-color: rgb(251, 251, 251);
+}
+.qtip-bootstrap {
+	padding: 1px; border-radius: 6px; border: 1px solid rgba(0, 0, 0, 0.2); border-image: none; color: rgb(51, 51, 51); line-height: 20px; font-size: 14px; box-shadow: 0px 5px 10px rgba(0,0,0,0.2); background-clip: padding-box; background-color: rgb(255, 255, 255); -webkit-border-radius: 6px; -moz-border-radius: 6px; -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, .2); -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, .2); -webkit-background-clip: padding-box; -moz-background-clip: padding;
+}
+.qtip-bootstrap .qtip-titlebar {
+	margin: 0px; padding: 8px 14px; border-radius: 5px 5px 0px 0px; line-height: 18px; font-size: 14px; font-weight: 400; border-bottom-color: rgb(235, 235, 235); border-bottom-width: 1px; border-bottom-style: solid; background-color: rgb(247, 247, 247); -webkit-border-radius: 5px 5px 0 0; -moz-border-radius: 5px 5px 0 0;
+}
+.qtip-bootstrap .qtip-titlebar .qtip-close {
+	top: 45%; right: 11px;
+}
+.qtip-bootstrap .qtip-content {
+	padding: 9px 14px;
+}
+.qtip-bootstrap .qtip-icon {
+	background: none;
+}
+.qtip-bootstrap .qtip-icon .ui-icon {
+	width: auto; height: auto; color: rgb(0, 0, 0); line-height: 18px; font-size: 20px; font-weight: 700; float: right; opacity: 0.2; text-shadow: 0px 1px 0px #fff;
+}
+.qtip-bootstrap .qtip-icon .ui-icon:hover {
+	color: rgb(0, 0, 0); text-decoration: none; cursor: pointer; opacity: 0.4;
+}
+:not(.ie9haxors).qtip div.qtip-content {
+	filter: none;
+}
+:not(.ie9haxors).qtip div.qtip-titlebar {
+	filter: none;
+}
+.qtip .qtip-tip {
+	margin: 0px auto; overflow: hidden; z-index: 10;
+}
+.qtip .qtip-tip {
+	background: none; border: 0px dashed transparent; border-image: none; color: rgb(18, 52, 86); position: absolute;
+}
+.qtip .qtip-tip .qtip-vml {
+	background: none; border: 0px dashed transparent; border-image: none; color: rgb(18, 52, 86); position: absolute;
+}
+.qtip .qtip-tip canvas {
+	background: none; border: 0px dashed transparent; border-image: none; color: rgb(18, 52, 86); position: absolute;
+}
+.qtip .qtip-tip canvas {
+	left: 0px; top: 0px;
+}
+.qtip .qtip-tip .qtip-vml {
+	display: inline-block; visibility: visible; behavior: url(#default#VML);
+}
+#qtip-overlay {
+	left: 0px; top: 0px; width: 100%; height: 100%; position: fixed;
+}
+.blurs#qtip-overlay {
+	cursor: pointer;
+}
+#qtip-overlay div {
+	left: 0px; top: 0px; width: 100%; height: 100%; position: absolute; opacity: 0.7; background-color: rgb(0, 0, 0);
+}
+.qtipmodal-ie6fix {
+	position: absolute !important;
+}

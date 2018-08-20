@@ -1,0 +1,75 @@
+        </div> <!--main-->
+        <!--页脚-->
+    </div>
+
+        <footer class="main-footer">
+            <!--Footer Bottom-->
+            <div class="footer-bottom">
+                <div class="auto-container">
+                    <div class="row clearfix">
+
+                        <!--column-->
+                        <div class="column col-md-6 col-sm-6 col-xs-12">
+                            <div class="copyright">Copyright © 2016-2018 : <%-lan == 'eng' ? 'SJTU-Yale Joint Centre for Biostatistics and SCH' : '交大耶鲁联合统计中心和上海市儿童医院'%>, All Rights Reserved</div>
+                        </div>
+                        <!--column-->
+                        <div class="column col-md-6 col-sm-6 col-xs-12">
+                            <ul>
+                                <li><a href="#">Privacy Policy</a></li>
+                                <li><a href="#">Terms & Condition</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <div class="scroll-to-top scroll-to-target" data-target=".main-header"><span class="fa fa-long-arrow-up"></span></div>
+        <!--[if (gte IE 6)&(lte IE 8)]>
+<script src="<%=static_dir%>/js/selectivizr.js"></script>
+<![endif]-->
+<script src="<%=static_dir%>/js/jquery.flexslider-min.js"></script>
+<script src="<%=static_dir%>/js/scripts.js"></script>
+        <script src="<%=static_dir%>/js/top-script.js"></script>
+        <script type="text/javascript">
+            // 设置为主页
+            function SetHome(obj,vrl){
+                try{
+                    obj.style.behavior='url(#default#homepage)';obj.setHomePage(vrl);
+                }
+                catch(e){
+                    if(window.netscape) {
+                        try {
+                            netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
+                        }
+                        catch (e) {
+                            alert("此操作被浏览器拒绝！\n请在浏览器地址栏输入“about:config”并回车\n然后将 [signed.applets.codebase_principal_support]的值设置为'true',双击即可。");
+                        }
+                        var prefs = Components.classes['@mozilla.org/preferences-service;1'].getService(Components.interfaces.nsIPrefBranch);
+                        prefs.setCharPref('browser.startup.homepage',vrl);
+                    }else{
+                        alert("您的浏览器不支持，请手动添加："+vrl);
+                    }
+                }
+            }
+            // 加入收藏 兼容360和IE6
+            function setFavor(sTitle,sURL)
+            {
+                try
+                {
+                    window.external.addFavorite(sURL, sTitle);
+                }
+                catch (e)
+                {
+                    try
+                    {
+                        window.sidebar.addPanel(sTitle, sURL, "");
+                    }
+                    catch (e)
+                    {
+                        alert("加入收藏失败，请使用Ctrl+D进行添加："+sURL);
+                    }
+                }
+            }
+        </script>
+        </body>
+</html>

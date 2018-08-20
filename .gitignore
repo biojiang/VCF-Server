@@ -1,0 +1,5 @@
+.tmp/
+.idea/
+searchLog.log
+node_modules/
+cloud/

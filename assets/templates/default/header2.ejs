@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<!--页眉-->
+<head>
+    <meta charset="UTF-8">
+
+    <!-- Remove this line if you use the .htaccess -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width">
+
+    <meta name="description" content="Designa Studio, a HTML5 / CSS3 template.">
+    <meta name="author" content="Sylvain Lafitte, Web Designer, sylvainlafitte.com">
+
+    <title>Genotype Phenotype Search</title>
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+
+    <link rel="stylesheet" href="<%=static_dir%>/js/jqcloud/jqcloud.css"/>
+    <link rel="stylesheet" href="<%=static_dir%>/bootstrap-3.3.5-dist/css/bootstrap.css"/>
+    <script src="<%=static_dir%>/js/angular.min.js"></script>
+    <script src="<%=static_dir%>/js/jquery-3.2.1.min.js"></script>
+    <script src="<%=static_dir%>/js/jquery.form.js"></script>
+    <script src="<%=static_dir%>/js/jquery.validate.min.js"></script>
+
+    <!-- jQCloud -->
+    <script src="<%=static_dir%>/js/jqcloud/jqcloud-1.0.4.min.js"></script>
+
+    <!-- dynatree -->
+    <script src="<%=static_dir%>/js/dynatree/jquery/jquery-ui.custom.js"></script>
+    <script src="<%=static_dir%>/js/dynatree/jquery/jquery.cookie.js"></script>
+    <link href="<%=static_dir%>/js/dynatree/src/skin/ui.dynatree.css" rel="stylesheet" type="text/css">
+    <script src="<%=static_dir%>/js/dynatree/src/jquery.dynatree.js"></script>
+
+    <!-- This will do the pagination -->
+    <script src="<%=static_dir%>/js/pagination.js"></script>
+    <link href="<%=static_dir%>/css/pagination.css" rel="stylesheet" />
+
+    <!--bootstrap-->
+    <script src="<%=static_dir%>/bootstrap-3.3.5-dist/js/bootstrap.js"></script>
+
+    <!--bootstrap-table-->
+    <script src="<%=static_dir%>/bootstrap-table-1.11.1-dist/bootstrap-table.js"></script>
+    <link rel="stylesheet" href="<%=static_dir%>/bootstrap-table-1.11.1-dist/bootstrap-table.css"/>
+
+    <!--select2 deals with the search box-->
+    <link href="<%=static_dir%>/js/select2-4.0.3/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="<%=static_dir%>/js/select2-4.0.3/dist/js/select2.full.min.js"></script>
+    <script src="<%=static_dir%>/js/select2-4.0.3/dist/js/i18n/zh-CN.js"></script>
+    <link rel="stylesheet" href="<%=static_dir%>/css/style1.css">
+    <link rel="stylesheet" href="<%=static_dir%>/css/myStyle.css">
+    <!--[if lt IE 9]>
+    <script src="<%=static_dir%>/http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+
+    <![endif]-->
+</head>
+
+<body ng-app="myApp" ng-controller="myCtrl">
+
+<div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" id="contentSignUp">
+            <ul class="nav nav-tabs" id="myTab">
+                <li class="active">
+                    <a href="#bodySignIn" id='tab-signIn' data-toggle="tab"><% if (lan == 'eng') { %>Sign in<% } else { %>登录<% } %></a>
+                </li>
+                <li class="">
+                    <a href="#bodySignUp" id='tab-signUp' data-toggle="tab"><% if (lan == 'eng') { %>Sign up<% } else { %>注册<% } %></a>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div class="modal-body tab-pane" id="bodySignUp">
+                    <form id="regFrom" action="/signUp" method="post">
+                        <!--<form id="regFrom" action="signUp" method="post" onsubmit="checkSignUp(this)">-->
+                        <div class="row">
+                            <label class="col-md-6" for="name"><% if (lan == 'eng') { %>User name: <% } else { %>用户名：<% } %>
+                                <input id="name" name="name" type="text"></label>
+                            <label class="col-md-6" for="email">Email:
+                                <input id="email" name="email" type="email">
+                            </label>
+
+
+                        </div>
+                        <div class="row">
+                            <label class="col-md-6" for="password"><% if (lan == 'eng') { %>Password: <% } else { %>密码：<% } %>
+                            <input id="password" name="password" type="password" placeholder="<% if (lan == 'eng') { %>More than 6 characters<% } else { %>请输入6位以上的密码<% } %>">
+                            </label>
+                            <label class="col-md-6" for="verifyPassword"><% if (lan == 'eng') { %>Password again: <% } else { %>再次输入密码：<% } %>
+                                <input id="verifyPassword" name="verifyPassword" type="password">
+                            </label>
+                        </div>
+                        <div class="row">
+                            <label class="col-md-3" for="verification"><% if (lan == 'eng') { %>Verification: <% } else { %>验证码：<% } %>
+                                <input id="verification" name="verification" type="text">
+                            </label>
+
+                            <label class="col-md-3">
+                                <br>
+                                <img id="rnd-img-1" src="" alt="验证码" onclick="loadRndImg(1);">
+                            </label>
+
+
+                            <label class="col-md-6">
+                                <br>
+                                <button class="btn btn-default pull-right" type="submit"><% if (lan == 'eng') { %>Submit<% } else { %>提交<% } %></button>
+                            </label>
+
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-body tab-pane active" id="bodySignIn">
+                    <!--<form id="loginForm" action="signIn" method="post" onsubmit="checkSignIn(this)">-->
+                    <form id="loginForm" action="/signIn" method="post">
+                        <div class="row">
+                            <label class="col-md-6" for="loginname" ><% if (lan == 'eng') { %>User name: <% } else { %>用户名：<% } %>
+                                <input id="loginname" name="loginname" type="text">
+                            </label>
+                            <label class="col-md-6" for="loginpassword"><% if (lan == 'eng') { %>Password: <% } else { %>密码：<% } %>
+                                <input id="loginpassword" name="loginpassword" type="password">
+                                <a href="/new_password"><% if (lan == 'eng') { %>Forget password?<% } else { %>忘记密码?<% } %></a>
+                            </label>
+                        </div>
+                        <div class="row">
+                            <label class="col-md-3" for="loginverification"><% if (lan == 'eng') { %>Verification: <% } else { %>验证码：<% } %>
+                                <input id="loginverification" name="loginverification" type="text">
+                            </label>
+
+                            <label class="col-md-3">
+                                <br>
+                                <img id="rnd-img-0" src="" alt="验证码" onclick="loadRndImg(0);">
+
+                            </label>
+
+                            <label class="col-md-6">
+                                <br>
+                                <button class="btn btn-default pull-right" type="submit"><% if (lan == 'eng') { %>Submit<% } else { %>提交<% } %></button>
+                            </label>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div><!-- /.modal -->
+</div>
+
+<script>
+    var eng = '<%-lan%>' == 'eng' ? 1 : 0;
+    $(function () {
+        //当用户点击“注册或登录”时，显示“登录”选项卡，切换选项卡自动刷新验证码
+        $('#myTab a:first').tab('show');
+        $('#tab-signIn').on('show.bs.tab', function (e) {
+            loadRndImg(0);
+        });
+        $('#tab-signUp').on('show.bs.tab', function (e) {
+            loadRndImg(1);
+        });
+
+    })
+
+    //显示登录模态窗
+    function signInOrUp(){
+        loadRndImg(0);
+        $('#loginModal').modal('show');
+    }
+
+    //刷新验证码
+    function loadRndImg(num){
+        document.getElementById('rnd-img-'+num).src = '/randompng?' + new Date();
+    }
+
+    //验证登录并发送
+    function checkSignIn(form) {
+
+        $(form).ajaxSubmit({
+        async: false,
+        complete: function (XHR, TS){
+            if (XHR.responseText === 'success'){
+                var navMod = '<%-navMod%>';
+                if(navMod === '0' || typeof navMod === 'undefined' )
+                {
+                    window.location.href = '/index';
+                }
+                else if(navMod === '1')
+                {
+                    window.location.href = '/gene_diag';
+                }
+                else if(navMod === '2')
+                {
+                    window.location.href = '/syn_diag';
+                }
+                else if(navMod === '3')
+                {
+                    window.location.href = '/database';
+                }
+                else if(navMod === '4')
+                {
+                    window.location.href = '/VCF-Server';
+                }
+
+
+            }
+            else if (XHR.responseText === 'exist'){
+                alert('用户名或密码错误！');
+                loadRndImg(0);
+                $('#loginpassword').val('');
+
+            }
+        }
+    });
+        return false;
+    }
+
+    //验证注册并发送
+    function checkSignUp(form) {
+        $(form).ajaxSubmit({
+            async: false,
+            complete: function (XHR, TS){
+                if (XHR.responseText === 'success'){
+                    alert('注册信息已保存，请在十分钟内登录邮箱进行验证。');
+                    window.location.href = '/index';
+                }
+            }
+        });
+        return false;
+    }
+    //jquery 表单验证
+    $(function () {
+        $('#regFrom').validate({
+            rules: {
+                name:{
+                    required: true,
+                    minlength: 3,
+                    remote: {
+                        type: "post",
+                        url: "/checkExists",
+                        data:{ type:'username',username:function () {
+                            return $('#name').val();
+                        }}
+                    }
+                },
+                password:{
+                    required: true,
+                    minlength: 6,
+                    maxlength: 20
+                },
+                verifyPassword:{
+                    required: true,
+                    equalTo: "#password"
+                },
+                email: {
+                    required: true,
+                    email: true,
+                    remote: {
+                        type: "post",
+                        url: "/checkExists",
+                        data:{ type:'email',email:function () {
+                            return $('#email').val();
+                        }}
+                    }
+                },
+                verification:{
+                    required: true,
+                    remote: {
+                        type: "post",
+                        url: "/checkExists",
+                        data:{ type:'code',code:function () {
+                            return $('#verification').val();
+                        }}
+                    }
+                }
+            },
+                messages: {
+                    name: {
+                        required: "用户名不能为空",
+                        minlength: "用户名的最小长度为3",
+                        remote:"用户名已存在"
+                    },
+                    password: {
+                        required: "密码不能为空",
+                        minlength: "密码长度不能少于6个字符",
+                        maxlength: "密码长度不能超过16个字符"
+                    },
+                    verifyPassword: {
+                        required: "确认密码不能为空",
+                        equalTo: "确认密码和密码不一致"
+                    },
+                    email: {
+                        required:"请输入一个正确的邮箱",
+                        email:"请输入一个正确的邮箱",
+                        remote:"邮箱已注册"
+
+
+                    },
+                    verification:{
+                        required:"请输入验证码",
+                        remote:function () {
+                            loadRndImg(1);
+                            return "验证码错误";
+                        }
+                    }
+                },
+                submitHandler: function(form) {
+                    checkSignUp(form);
+                },
+
+            });
+        $('#loginForm').validate({
+            onfocusout:false,
+            rules: {
+                loginname: {
+                    required: true,
+                    minlength: 3
+                },
+                loginpassword: {
+                    required: true,
+                    minlength: 6,
+                    maxlength: 20
+                },
+                loginverification: {
+                    required: true,
+                    remote: {
+                        type: "post",
+                        url: "/checkExists",
+                        data: {type: 'code', code: function (){
+                                return $('#loginverification').val();
+                        }}
+                    }
+                }},
+                messages: {
+                    loginname: {
+                        required: "用户名不能为空",
+                        minlength: "用户名的最小长度为3",
+                    },
+                    loginpassword: {
+                        required: "密码不能为空",
+                        minlength: "密码长度不能少于6个字符",
+                        maxlength: "密码长度不能超过16个字符"
+
+                    },
+                    loginverification: {
+                        required: "请输入验证码",
+                        remote: function () {
+                            loadRndImg(0);
+                            return "验证码错误";
+                        }
+                    }
+                },
+                submitHandler: function (form) {
+                    checkSignIn(form);
+                },
+
+        });
+    });
+
+
+</script>
+    <!-- Prompt IE 7 users to install Chrome Frame -->
+    <!--[if lt IE 8]><p class=chromeframe>Your browser is <em>ancient!</em> <a href="http://browsehappy.com/">Upgrade to a different browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience this site.</p><![endif]-->
+
+<div class="page-wrapper">
+
+    <!-- Preloader -->
+    <div class="preloader" style="display: none;"></div>
+
+    <!-- Main Header-->
+    <header class="main-header">
+        <div class="header-top">
+            <div class="auto-container clearfix">
+                <!--Top Left-->
+                <div class="top-left pull-left">
+                    <div class="social-links"> <a href="#"><span class="fa fa-facebook-f"></span></a> <a href="#"><span class="fa fa-twitter"></span></a> <a href="#"><span class="fa fa-linkedin"></span></a> <a href="#"><span class="fa fa-instagram"></span></a> <a href="#"><span class="fa fa-vimeo"></span></a> </div>
+                </div>
+
+                <!--Top Right-->
+                <div class="top-right pull-right">
+                    <!--Links Nav-->
+                    <ul class="links-nav">
+                        <li><% if (userName != '') {%>
+                            <a href="/my_request">
+                                <!--<% if (lan == 'eng') { %>My centre<% } else { %>个人中心<% } %>-->
+                                <%-userName%>
+                            </a>
+                            <a href="/signOut">
+                                <% if (lan == 'eng') { %>Sign Out<% } else { %>退出登陆<% } %>
+                            </a>
+                            <% } else { %>
+                            <a href="javascript:void(0);" onclick="signInOrUp();">
+                                <% if (lan == 'eng') { %>Sign in/Sign up<% } else { %>登录/注册<% } %>
+                            </a>
+                            <% } %></li>
+                            <li><% if (lan == 'eng') { %>
+                            <a href="/index?lan=chs">
+                                中文
+                            </a>
+                            <% } else { %>
+                            <a href="/index?lan=eng">
+                                English
+                            </a>
+                            <% } %></li>
+                         <li><% if (lan == 'eng') { %>
+                            <a href="/fandq?land=eng">
+                                FAQ’S
+                            </a>
+                            <% } else { %>
+                            <a href="/fandq?lan=chs">
+                                 常见问题
+                            </a>
+                            <% } %></li>
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!--Header-Upper-->
+        <div class="header-upper">
+            <div class="auto-container">
+                <div class="clearfix">
+                    <div class="pull-left logo-outer" >
+                        <div class="logo"><a href="/index"> <img alt="GPS" src="<%=static_dir%>/img/logo.png"/></a></div>
+
+                    </div>
+                    <div class="pull-left logo-outer" >
+                        <div class="logo"><a href="http://www.sjtu.edu.cn"> <img alt="SJTU" src="<%=static_dir%>/img/logo-sjtu.png"/></a></div>
+
+                    </div>
+                    <div class="pull-left logo-outer" >
+                        <div class="logo"><a href="http://publichealth.yale.edu/people/biostat.aspx"> <img alt="Yale" src="<%=static_dir%>/img/logo-yale.png"/></a></div>
+
+                    </div>
+                    <div class="pull-left logo-outer" >
+                        <div class="logo"><a href="http://www.shchildren.com.cn/"> <img alt="SCH" src="<%=static_dir%>/img/logo-sch.png"/></a></div>
+
+                    </div>
+
+
+                    <div class="pull-right upper-right clearfix">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--Header-Lower-->
+        <div class="header-lower">
+            <div class="auto-container">
+                <div class="nav-outer clearfix">
+                    <!-- Main Menu -->
+                    <nav class="main-menu">
+                        <div class="navbar-header">
+                            <!-- Toggle Button -->
+                            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse"> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
+                        </div>
+                        <div class="navbar-collapse collapse clearfix">
+                            <% var navModule = typeof navMod === 'undefined' ? -1 : navMod;%>
+                            <ul class="navigation clearfix">
+                                <li class="<%-navModule==0 ? 'current' : ''%>"><a class="indexLink" href="/index"><% if (lan == 'eng') { %>Pheno-diagnosis<% } else { %>症状诊断<% } %></a></li>
+                                <li class="<%-navModule==1 ? 'current' : ''%>"><a class="geneLink" href="/gene_diag"><% if (lan == 'eng') { %>Geno-diagnosis<% } else { %>基因诊断<% } %></a></li>
+                                <li class="<%-navModule==2 ? 'current' : ''%>"><a href="/syn_diag"><% if (lan == 'eng') { %>Syn-diagnosis<% } else { %>综合诊断<% } %></a></li>
+                                <li class="<%-navModule==3 ? 'current' : ''%>"><a href="/database"><% if (lan == 'eng') { %>Case database<% } else { %>病例库<% } %></a></li>
+                                <li class="<%-navModule==4 ? 'current' : ''%>"><a href="/VCF-Server"><% if (lan == 'eng') { %>VCF Server<% } else { %>VCF Server<% } %></a></li>
+                                <li class="<%-navModule==5 ? 'current' : ''%>"><% if (lan == 'eng') { %><a href="http://transmed.sjtu.edu.cn/zhyx/ylhome.do?method=getHomeList&version=en">About Us<% } else { %><a href="http://transmed.sjtu.edu.cn/zhyx/ylhome.do?method=getHomeList&version=zh">关于我们<% } %></a></li>
+                            </ul>
+                        </div>
+                    </nav>
+                    <!-- Main Menu End-->
+                </div>
+            </div>
+        </div>
+
+        <!--Sticky Header-->
+        <div class="sticky-header">
+            <div class="auto-container clearfix">
+                <!--Logo-->
+                <div class="logo pull-left"> <a href="/index" class="img-responsive"><img class="img-brand" alt="GPS" src="<%=static_dir%>/img/logo-small.png"/></a> </div>
+                <div class="logo pull-left"> <a href="http://www.sjtu.edu.cn" class="img-responsive"><img class="img-brand" alt="SJTU" src="<%=static_dir%>/img/logo-sjtu-small.png"/></a> </div>
+                <div class="logo pull-left"> <a href="http://publichealth.yale.edu/people/biostat.aspx" class="img-responsive"><img class="img-brand" alt="Yale" src="<%=static_dir%>/img/logo-yale-small.png"/></a> </div>
+                <div class="logo pull-left"> <a href="http://www.shchildren.com.cn/" class="img-responsive"><img class="img-brand" alt="SCH" src="<%=static_dir%>/img/logo-sch-small.png"/></a> </div>
+
+                <!--Right Col-->
+                <div class="right-col pull-right">
+                    <!-- Main Menu -->
+                    <nav class="main-menu">
+                        <div class="navbar-header">
+                            <!-- Toggle Button -->
+                            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse"> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
+                        </div>
+                        <div class="navbar-collapse collapse clearfix">
+                            <ul class="navigation clearfix">
+                                <li class="<%-navModule==0 ? 'current' : ''%>"><a class="indexLink" href="/index"><% if (lan == 'eng') { %>Pheno-diagnosis<% } else { %>症状诊断<% } %></a></li>
+                                <li class="<%-navModule==1 ? 'current' : ''%>"><a class="geneLink" href="/gene_diag"><% if (lan == 'eng') { %>Geno-diagnosis<% } else { %>基因诊断<% } %></a></li>
+                                <li class="<%-navModule==2 ? 'current' : ''%>"><a href="/syn_diag"><% if (lan == 'eng') { %>Syn-diagnosis<% } else { %>综合诊断<% } %></a></li>
+                                <li class="<%-navModule==3 ? 'current' : ''%>"><a href="/database"><% if (lan == 'eng') { %>Case database<% } else { %>病例库<% } %></a></li>
+                                <li class="<%-navModule==4 ? 'current' : ''%>"><a href="/VCF-Server"><% if (lan == 'eng') { %>VCF Server<% } else { %>VCF Server<% } %></a></li>
+                                <li class="<%-navModule==5 ? 'current' : ''%>"><% if (lan == 'eng') { %><a href="http://transmed.sjtu.edu.cn/zhyx/ylhome.do?method=getHomeList&version=en">About Us<% } else { %><a href="http://transmed.sjtu.edu.cn/zhyx/ylhome.do?method=getHomeList&version=zh">关于我们<% } %></a></li>
+                            </ul>
+                        </div>
+                    </nav>
+                    <!-- Main Menu End-->
+                </div>
+            </div>
+        </div>
+        <!--End Sticky Header-->
+
+    </header>
+    <!--End Main Header -->
+
+    <div class="auto-container clearfix">
+        <div class="main">
+<!--End pagewrapper-->

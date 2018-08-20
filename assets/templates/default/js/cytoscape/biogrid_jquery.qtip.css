@@ -1,0 +1,249 @@
+.ui-tooltip {
+	border-width: 1px; border-style: solid; left: -28000px; top: -28000px; display: none; position: absolute; min-width: 50px; max-width: 600px;
+}
+.qtip {
+	border-width: 1px; border-style: solid; left: -28000px; top: -28000px; display: none; position: absolute; min-width: 50px; max-width: 600px;
+}
+.ui-tooltip-fluid {
+	float: left !important; display: block; visibility: hidden; position: static !important;
+}
+.ui-tooltip-content {
+	padding: 5px 9px; text-align: left; overflow: hidden; position: relative; -ms-word-wrap: break-word;
+}
+.ui-tooltip-titlebar {
+	border-width: 0px 0px 1px; padding: 5px 35px 5px 10px; overflow: hidden; font-weight: bold; position: relative; min-height: 14px;
+}
+.ui-tooltip-titlebar + .ui-tooltip-content {
+	border-top-width: 0px !important;
+}
+.ui-tooltip-titlebar .ui-state-default {
+	border-width: 1px; border-style: solid; top: 50%; right: 4px; margin-top: -9px; position: absolute; cursor: pointer;
+}
+* html .ui-tooltip-titlebar .ui-state-default {
+	top: 16px;
+}
+.ui-tooltip-titlebar .ui-icon {
+	text-indent: -1000em; display: block;
+}
+.ui-tooltip-icon .ui-icon {
+	text-indent: -1000em; display: block;
+}
+.ui-tooltip-icon {
+	border-radius: 3px; text-decoration: none; -webkit-border-radius: 3px; -moz-border-radius: 3px;
+}
+.ui-tooltip-icon .ui-icon {
+	border-radius: 3px; text-decoration: none; -webkit-border-radius: 3px; -moz-border-radius: 3px;
+}
+.ui-tooltip-icon .ui-icon {
+	background: no-repeat -100em -100em; font: bold 10px/13px Tahoma, sans-serif; width: 18px; height: 14px; text-align: center; color: inherit; text-indent: 0px; font-size-adjust: none; font-stretch: normal;
+}
+.ui-tooltip-focus {
+	
+}
+.ui-tooltip-hover {
+	
+}
+.ui-tooltip-default {
+	border-color: rgb(241, 208, 49); color: rgb(85, 85, 85); background-color: rgb(255, 255, 163);
+}
+.ui-tooltip-default .ui-tooltip-titlebar {
+	background-color: rgb(255, 239, 147);
+}
+.ui-tooltip-default .ui-tooltip-icon {
+	background: rgb(241, 241, 241); border-color: rgb(204, 204, 204); color: rgb(119, 119, 119);
+}
+.ui-tooltip-default .ui-tooltip-titlebar .ui-state-hover {
+	border-color: rgb(170, 170, 170); color: rgb(17, 17, 17);
+}
+.ui-tooltip .ui-tooltip-tip {
+	margin: 0px auto; overflow: hidden; z-index: 10;
+}
+.ui-tooltip .ui-tooltip-tip {
+	background: none; border: 0px dashed transparent; border-image: none; color: rgb(18, 52, 86); line-height: 0.1px !important; font-size: 0.1px !important; position: absolute;
+}
+.ui-tooltip .ui-tooltip-tip * {
+	background: none; border: 0px dashed transparent; border-image: none; color: rgb(18, 52, 86); line-height: 0.1px !important; font-size: 0.1px !important; position: absolute;
+}
+.ui-tooltip .ui-tooltip-tip canvas {
+	left: 0px; top: 0px;
+}
+#qtip-overlay {
+	left: -10000em; top: -10000em; position: fixed;
+}
+.blurs#qtip-overlay {
+	cursor: pointer;
+}
+#qtip-overlay div {
+	left: 0px; top: 0px; width: 100%; height: 100%; position: absolute; opacity: 0.7; background-color: black;
+}
+.ui-tooltip-light {
+	border-color: rgb(226, 226, 226); color: rgb(69, 69, 69); background-color: white;
+}
+.ui-tooltip-light .ui-tooltip-titlebar {
+	background-color: rgb(241, 241, 241);
+}
+.ui-tooltip-dark {
+	border-color: rgb(48, 48, 48); padding: 5px; border-radius: 10px; color: rgb(255, 255, 255); background-color: rgb(80, 80, 80); -webkit-border-radius: 10px; -moz-border-radius: 10px;
+}
+.ui-tooltip-dark .ui-tooltip-titlebar {
+	background-color: rgb(64, 64, 64);
+}
+.ui-tooltip-dark .ui-tooltip-icon {
+	border-color: rgb(68, 68, 68);
+}
+.ui-tooltip-dark .ui-tooltip-titlebar .ui-state-hover {
+	border-color: rgb(48, 48, 48);
+}
+.ui-tooltip-cream {
+	border-color: rgb(249, 233, 142); padding: 5px; border-radius: 10px; color: rgb(51, 51, 51); background-color: rgb(251, 247, 170); -webkit-border-radius: 10px; -moz-border-radius: 10px;
+}
+.ui-tooltip-cream .ui-tooltip-titlebar {
+	background-color: rgb(240, 222, 125);
+}
+.ui-tooltip-cream .ui-state-default .ui-tooltip-icon {
+	background-position: -82px 0px;
+}
+.ui-tooltip-red {
+	border-color: rgb(217, 82, 82); background-color: rgb(247, 139, 131);
+}
+.ui-tooltip-red .ui-tooltip-titlebar {
+	background-color: rgb(240, 109, 101);
+}
+.ui-tooltip-red .ui-state-default .ui-tooltip-icon {
+	background-position: -102px 0px;
+}
+.ui-tooltip-red .ui-tooltip-icon {
+	border-color: rgb(217, 82, 82);
+}
+.ui-tooltip-red .ui-tooltip-titlebar .ui-state-hover {
+	border-color: rgb(217, 82, 82);
+}
+.ui-tooltip-green {
+	border-color: rgb(144, 217, 63); color: rgb(63, 98, 25); background-color: rgb(202, 237, 158);
+}
+.ui-tooltip-green .ui-tooltip-titlebar {
+	background-color: rgb(176, 222, 120);
+}
+.ui-tooltip-green .ui-state-default .ui-tooltip-icon {
+	background-position: -42px 0px;
+}
+.ui-tooltip-blue {
+	border-color: rgb(173, 217, 237); color: rgb(94, 153, 189); background-color: rgb(229, 246, 254);
+}
+.ui-tooltip-blue .ui-tooltip-titlebar {
+	background-color: rgb(208, 233, 245);
+}
+.ui-tooltip-blue .ui-state-default .ui-tooltip-icon {
+	background-position: -2px 0px;
+}
+.ui-tooltip-shadow {
+	box-shadow: 1px 1px 3px 1px rgba(0,0,0,0.15); -webkit-box-shadow: 1px 1px 3px 1px rgba(0, 0, 0, 0.15); -moz-box-shadow: 1px 1px 3px 1px rgba(0, 0, 0, 0.15);
+}
+.ui-tooltip-rounded {
+	border-radius: 5px; -webkit-border-radius: 5px; -moz-border-radius: 5px;
+}
+.ui-tooltip-tipsy {
+	border-radius: 5px; -webkit-border-radius: 5px; -moz-border-radius: 5px;
+}
+.ui-tooltip-bootstrap {
+	border-radius: 5px; -webkit-border-radius: 5px; -moz-border-radius: 5px;
+}
+.ui-tooltip-youtube {
+	background: linear-gradient(rgb(74, 74, 74) 0px, black 100%) rgb(74, 74, 74); border-width: 0px; border-radius: 2px; color: white; box-shadow: 0px 0px 3px #333; -webkit-border-radius: 2px; -moz-border-radius: 2px; -webkit-box-shadow: 0 0 3px #333; -moz-box-shadow: 0 0 3px #333;
+}
+.ui-tooltip-youtube .ui-tooltip-titlebar {
+	background-color: rgba(0, 0, 0, 0);
+}
+.ui-tooltip-youtube .ui-tooltip-content {
+	font: 12px/normal arial, sans-serif; padding: 0.75em; font-size-adjust: none; font-stretch: normal;
+}
+.ui-tooltip-youtube .ui-tooltip-icon {
+	border-color: rgb(34, 34, 34);
+}
+.ui-tooltip-youtube .ui-tooltip-titlebar .ui-state-hover {
+	border-color: rgb(48, 48, 48);
+}
+.ui-tooltip-jtools {
+	background: rgba(0, 0, 0, 0.7); border-radius: 2px; border: 2px solid rgba(241, 241, 241, 1); border-image: none; box-shadow: 0px 0px 12px #333; -webkit-border-radius: 2px; -moz-border-radius: 2px; -webkit-box-shadow: 0 0 12px #333; -moz-box-shadow: 0 0 12px #333;
+}
+.ui-tooltip-jtools .ui-tooltip-titlebar {
+	background-color: transparent;
+}
+.ui-tooltip-jtools .ui-tooltip-content {
+	
+}
+.ui-tooltip-jtools .ui-tooltip-titlebar {
+	background: none; border: 0px dashed transparent; border-image: none; color: white;
+}
+.ui-tooltip-jtools .ui-tooltip-content {
+	background: none; border: 0px dashed transparent; border-image: none; color: white;
+}
+.ui-tooltip-jtools .ui-tooltip-icon {
+	border-color: rgb(85, 85, 85);
+}
+.ui-tooltip-jtools .ui-tooltip-titlebar .ui-state-hover {
+	border-color: rgb(51, 51, 51);
+}
+.ui-tooltip-cluetip {
+	border: 0px dashed transparent; border-image: none; color: rgb(17, 17, 17); box-shadow: 4px 4px 5px rgba(0,0,0,0.4); background-color: rgb(217, 217, 194); -webkit-box-shadow: 4px 4px 5px rgba(0, 0, 0, 0.4); -moz-box-shadow: 4px 4px 5px rgba(0, 0, 0, 0.4);
+}
+.ui-tooltip-cluetip .ui-tooltip-titlebar {
+	border: 0px dashed transparent; border-image: none; color: white; background-color: rgb(135, 135, 106);
+}
+.ui-tooltip-cluetip .ui-tooltip-icon {
+	border-color: rgb(128, 128, 100);
+}
+.ui-tooltip-cluetip .ui-tooltip-titlebar .ui-state-hover {
+	border-color: rgb(105, 105, 82); color: rgb(105, 105, 82);
+}
+.ui-tooltip-tipsy {
+	background: rgba(0, 0, 0, 0.87); border: 0px solid transparent; border-image: none; color: white; line-height: 16px; font-family: "Lucida Grande", sans-serif; font-size: 11px; font-weight: bold; text-shadow: 0px 1px black;
+}
+.ui-tooltip-tipsy .ui-tooltip-titlebar {
+	background-color: transparent;
+}
+.ui-tooltip-tipsy .ui-tooltip-content {
+	
+}
+.ui-tooltip-tipsy .ui-tooltip-icon {
+	border-color: rgb(34, 34, 34); text-shadow: none;
+}
+.ui-tooltip-tipsy .ui-tooltip-titlebar .ui-state-hover {
+	border-color: rgb(48, 48, 48);
+}
+.ui-tooltip-tipped {
+	border-radius: 3px; border: 3px solid rgb(149, 159, 169); border-image: none; color: rgb(69, 69, 69); font-family: serif; font-weight: normal; background-color: rgb(249, 249, 249); -webkit-border-radius: 3px; -moz-border-radius: 3px;
+}
+.ui-tooltip-tipped .ui-tooltip-titlebar {
+	background: rgb(58, 121, 184); color: white; border-bottom-width: 0px;
+}
+.ui-tooltip-tipped .ui-tooltip-icon {
+	background: rgb(40, 85, 137); border: 2px solid rgb(40, 85, 137); border-image: none;
+}
+.ui-tooltip-tipped .ui-tooltip-icon .ui-icon {
+	color: rgb(85, 85, 85); background-color: rgb(251, 251, 251);
+}
+.ui-tooltip-bootstrap {
+	border-radius: 5px; border: 1px solid rgba(0, 0, 0, 0.2); border-image: none; color: rgb(51, 51, 51); line-height: 18px; font-size: 13px; box-shadow: 0px 5px 10px rgba(0,0,0,0.2); background-clip: padding-box; background-color: rgb(255, 255, 255); -webkit-border-radius: 5px; -moz-border-radius: 5px; -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); -webkit-background-clip: padding-box; -moz-background-clip: padding;
+}
+.ui-tooltip-bootstrap .ui-tooltip-titlebar {
+	line-height: 22px; font-size: 18px; border-bottom-color: rgb(204, 204, 204); border-bottom-width: 1px; border-bottom-style: solid; background-color: transparent;
+}
+.ui-tooltip-bootstrap .ui-tooltip-titlebar .ui-state-default {
+	top: 49%; right: 9px;
+}
+.ui-tooltip-bootstrap .ui-tooltip-icon {
+	background: white;
+}
+.ui-tooltip-bootstrap .ui-tooltip-icon .ui-icon {
+	width: auto; height: auto; color: rgb(0, 0, 0); line-height: 18px; font-size: 20px; font-weight: bold; float: right; opacity: 0.2; text-shadow: 0px 1px 0px #ffffff;
+}
+.ui-tooltip-bootstrap .ui-tooltip-icon .ui-icon:hover {
+	color: rgb(0, 0, 0); text-decoration: none; cursor: pointer; opacity: 0.4;
+}
+:not(.ie9haxors).ui-tooltip div.ui-tooltip-content {
+	filter: none;
+}
+:not(.ie9haxors).ui-tooltip div.ui-tooltip-titlebar {
+	filter: none;
+}

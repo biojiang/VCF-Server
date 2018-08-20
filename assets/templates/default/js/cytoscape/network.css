@@ -1,0 +1,73 @@
+
+#right-part {
+	left: 30em; top: 0px; right: 0px; bottom: 0px; overflow: hidden; position: absolute;
+}
+#left-part {
+	left: 0px; top: 0px; width: 30em; right: 0px; bottom: 0px; overflow: hidden; position: absolute;
+}
+#menu {
+	top: 0px; width: 100%; bottom: 0px; float: right; position: absolute;
+}
+.config {
+	background: rgba(0, 0, 0, 0.75); padding: 1em; left: 0px; top: 0px; width: 30em; right: 0px; bottom: 0px; color: rgb(255, 255, 255); overflow: auto; position: absolute; z-index: 1; box-sizing: border-box; transition-property: opacity; transition-duration: 250ms; transition-timing-function: ease-out;
+}
+#TR {
+	margin: 1em 1em 1em 0.5em; padding: 0.2em 0.6em 0.3em; border-radius: 0.5em; text-align: center; color: rgb(255, 255, 255); line-height: 1; font-size: 20px; font-weight: 700; vertical-align: baseline; float: left; display: inline-block; white-space: nowrap; background-color: rgb(91, 192, 222);
+}
+#TR-context {
+	margin: 2em 0em 1em; text-align: center; font-size: 15px; vertical-align: baseline; float: right; display: inline-block; position: relative;
+}
+.param {
+	margin-bottom: 1em;
+}
+.preamble {
+	margin-bottom: 2em;
+}
+p {
+	margin: 0.5em 0px; font-size: 0.8em;
+}
+.param button {
+	width: 3em; margin-right: 0.25em;
+}
+a {
+	color: rgb(98, 218, 234);
+}
+a:hover {
+	color: rgb(98, 218, 234);
+}
+.label {
+	display: inline-block;
+}
+.text {
+	color: black;
+}
+.TR a:link {
+	color: white;
+}
+.TR a:visited {
+	color: white;
+}
+.TR a:hover {
+	color: white;
+}
+.TR a:active {
+	color: white;
+}
+.slider {
+	display: block;
+}
+.config-toggle {
+	margin: 0.2em; padding: 1em; border: 5px solid red; border-image: none; left: 0px; top: 0px; color: rgb(136, 136, 136); position: absolute; z-index: 9999999; cursor: pointer;
+}
+.config-closed .config {
+	opacity: 0; pointer-events: none;
+}
+.config-closed #cy {
+	right: 0px;
+}
+@media all and (max-width:600px)
+{
+#cy {
+	right: 0px;
+}
+}

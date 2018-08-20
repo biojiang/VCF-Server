@@ -1,0 +1,63 @@
+        </div> <!--main-->
+        <!--页脚-->
+    </div>
+        <nav class="navbar navbar-default navbar-static-bottom"><!--navbar-static-bottom并不在bootstrap里面存在，但我在style.css里面写了相关样式-->
+            <div class="container-fluid">
+                <div class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav col-md-12">
+                        <li class="col-md-12"><p>
+                            Copyright © 2016-2017 : <%-lan == 'eng' ? 'SJTU-Yale Joint Centre for Biostatistics' : '上海市儿童医院和交大耶鲁联合统计中心'%>, All Rights Reserved
+                        </p></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+<!--[if (gte IE 6)&(lte IE 8)]>
+<script src="<%=static_dir%>/js/selectivizr.js"></script>
+<![endif]-->
+<script src="<%=static_dir%>/js/jquery.flexslider-min.js"></script>
+<script src="<%=static_dir%>/js/scripts.js"></script>
+        <script type="text/javascript">
+            // 设置为主页
+            function SetHome(obj,vrl){
+                try{
+                    obj.style.behavior='url(#default#homepage)';obj.setHomePage(vrl);
+                }
+                catch(e){
+                    if(window.netscape) {
+                        try {
+                            netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
+                        }
+                        catch (e) {
+                            alert("此操作被浏览器拒绝！\n请在浏览器地址栏输入“about:config”并回车\n然后将 [signed.applets.codebase_principal_support]的值设置为'true',双击即可。");
+                        }
+                        var prefs = Components.classes['@mozilla.org/preferences-service;1'].getService(Components.interfaces.nsIPrefBranch);
+                        prefs.setCharPref('browser.startup.homepage',vrl);
+                    }else{
+                        alert("您的浏览器不支持，请手动添加："+vrl);
+                    }
+                }
+            }
+            // 加入收藏 兼容360和IE6
+            function setFavor(sTitle,sURL)
+            {
+                try
+                {
+                    window.external.addFavorite(sURL, sTitle);
+                }
+                catch (e)
+                {
+                    try
+                    {
+                        window.sidebar.addPanel(sTitle, sURL, "");
+                    }
+                    catch (e)
+                    {
+                        alert("加入收藏失败，请使用Ctrl+D进行添加："+sURL);
+                    }
+                }
+            }
+        </script>
+        </body>
+</html>

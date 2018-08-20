@@ -1,0 +1,159 @@
+#menu {
+	padding: 0px 5px; width: 965px; height: 30px; line-height: 1; font-family: Arial, sans-serif; font-size: 12px; display: block; background-color: rgb(238, 238, 238);
+}
+#menu h1 {
+	margin: 0px; padding: 0px; border: 0px currentColor; border-image: none;
+}
+#menu ul {
+	margin: 0px; padding: 0px; border: 0px currentColor; border-image: none;
+}
+#menu p {
+	margin: 0px; padding: 0px; border: 0px currentColor; border-image: none;
+}
+#menu img {
+	margin: 0px; padding: 0px; border: 0px currentColor; border-image: none;
+}
+#menu h1 {
+	font-weight: normal;
+}
+#menu ul {
+	list-style: none;
+}
+#menu a {
+	color: rgb(80, 80, 80); text-decoration: none;
+}
+#menu .menu-label {
+	text-transform: uppercase; font-weight: bold;
+}
+#menu .menu-top > li {
+	transition:background-color 0.2s; text-align: center; float: left; position: relative; -webkit-transition: background-color 0.2s; -moz-transition: background-color 0.2s; -o-transition: background-color 0.2s;
+}
+#menu .menu-top > li:hover {
+	transition:background-color 0.2s; background-color: rgb(64, 64, 64); -webkit-transition: background-color 0.2s; -moz-transition: background-color 0.2s; -o-transition: background-color 0.2s;
+}
+#menu .menu-top .menu-right {
+	float: right;
+}
+#menu .menu-textbox {
+	padding: 0px 20px; transition:color 0.2s; color: rgb(80, 80, 80); line-height: 30px; display: block; cursor: pointer; -webkit-transition: color 0.2s; -moz-transition: color 0.2s; -o-transition: color 0.2s;
+}
+#menu li:hover .menu-textbox {
+	transition:color 0.2s; color: rgb(224, 224, 224); -webkit-transition: color 0.2s; -moz-transition: color 0.2s; -o-transition: color 0.2s;
+}
+#menu .menu-button {
+	padding: 0px 20px; transition:color 0.2s; color: rgb(80, 80, 80); line-height: 30px; display: block; cursor: pointer; -webkit-transition: color 0.2s; -moz-transition: color 0.2s; -o-transition: color 0.2s;
+}
+#menu li:hover .menu-button {
+	transition:color 0.2s; color: rgb(224, 224, 224); -webkit-transition: color 0.2s; -moz-transition: color 0.2s; -o-transition: color 0.2s;
+}
+#menu .menu-drop {
+	padding-right: 15px;
+}
+#menu .menu-drop .menu-label {
+	background: url("../images/drop1.png") no-repeat right; transition:background 0.2s; padding-right: 20px; -webkit-transition: background 0.2s; -moz-transition: background 0.2s; -o-transition: background 0.2s;
+}
+#menu li:hover .menu-drop .menu-label {
+	background: url("../images/drop2.png") no-repeat right; transition:background 0.2s; -webkit-transition: background 0.2s; -moz-transition: background 0.2s; -o-transition: background 0.2s;
+}
+#menu .menu-dropdown {
+	border-radius: 0px 0px 5px 5px; left: -5000px; text-align: left; position: absolute; z-index: 999999; opacity: 0; background-color: rgb(64, 64, 64); -webkit-border-radius: 0 0 5px 5px; -moz-border-radius: 0 0 5px 5px; -ms-border-radius: 0 0 5px 5px; -o-border-radius: 0 0 5px 5px;
+}
+#menu li:hover .menu-dropdown {
+	transition:opacity 0.2s; left: 0px; opacity: 1; -webkit-transition: opacity 0.2s; -moz-transition: opacity 0.2s; -o-transition: opacity 0.2s;
+}
+#menu .menu-right:hover .menu-dropdown {
+	left: auto; right: 0px;
+}
+#menu .menu-sub {
+	margin: 5px 0px;
+}
+#menu .menu-sub li {
+	transition:background-color 0.1s; white-space: nowrap; -webkit-transition: background-color 0.1s; -moz-transition: background-color 0.1s; -o-transition: background-color 0.1s;
+}
+#menu .menu-sub li:hover {
+	background: url("../images/select.png") no-repeat 10px rgb(192, 192, 192); transition:background-color 0.2s; -webkit-transition: background-color 0.2s; -moz-transition: background-color 0.2s; -o-transition: background-color 0.2s;
+}
+#menu .menu-subbutton {
+	padding: 7px 20px; transition:color 0.2s; color: rgb(208, 208, 208); line-height: 1.3; display: block; cursor: pointer; -webkit-transition: color 0.2s; -moz-transition: color 0.2s; -o-transition: color 0.2s;
+}
+#menu .menu-sub li:hover .menu-subbutton {
+	transition:color 0.2s; color: rgb(80, 80, 80); -webkit-transition: color 0.2s; -moz-transition: color 0.2s; -o-transition: color 0.2s;
+}
+#menu .menu-desc {
+	transition:color 0.2s; color: rgb(160, 160, 160); font-style: italic; -webkit-transition: color 0.2s; -moz-transition: color 0.2s; -o-transition: color 0.2s;
+}
+#menu .menu-sub li:hover .menu-desc {
+	transition:color 0.2s; color: rgb(80, 80, 80); -webkit-transition: color 0.2s; -moz-transition: color 0.2s; -o-transition: color 0.2s;
+}
+#menu .menu-row {
+	vertical-align: text-top; display: inline-block; -ms-zoom: 1;
+}
+#menu .menu-row .menu-sub {
+	margin: 0px;
+}
+#menu h1 {
+	color: rgb(176, 176, 176); font-size: 2em;
+}
+#menu p {
+	color: rgb(229, 229, 229);
+}
+#menu .emp {
+	font-weight: bold;
+}
+#menu .quote {
+	font-style: italic;
+}
+#menu .menu-dropdown3 {
+	padding-top: 5px; white-space: nowrap;
+}
+#menu .menu-dropdown3 h1 {
+	margin: 0px 0px 5px 20px;
+}
+#menu .menu-dropdown3 .menu-row {
+	margin: 5px 0px; border-right-color: rgb(112, 112, 112); border-right-width: 1px; border-right-style: dotted;
+}
+#menu .menu-dropdown3 :last-child.menu-row {
+	border-right-color: currentColor; border-right-width: medium; border-right-style: none;
+}
+#menu .menu-dropdown4 {
+	padding-top: 5px; white-space: nowrap;
+}
+#menu .menu-dropdown4 h1 {
+	margin: 0px 0px 5px 20px;
+}
+#menu .menu-dropdown4 .menu-row div {
+	margin: 5px 0px 10px; border-right-color: rgb(112, 112, 112); border-right-width: 1px; border-right-style: dotted;
+}
+#menu .menu-dropdown4 :last-child.menu-row div {
+	border-right-color: currentColor; border-right-width: medium; border-right-style: none;
+}
+#menu .menu-dropdown4 .menu-row div:last-child {
+	margin-bottom: 5px;
+}
+#menu .menu-dropdown6 img {
+	margin-right: 5px; vertical-align: middle;
+}
+#menu .menu-dropdown6 .menu-label {
+	vertical-align: middle;
+}
+#menu .menu-dropdown6 .menu-subbutton {
+	padding: 5px 20px;
+}
+#menu .menu-dropdown7 {
+	padding: 10px; width: 210px;
+}
+#menu .menu-dropdown7 p {
+	margin-top: 7px;
+}
+#menu .menu-dropdown7 h1 {
+	color: rgb(229, 229, 229); padding-bottom: 3px; border-bottom-color: rgb(133, 133, 133); border-bottom-width: 1px; border-bottom-style: solid;
+}
+#menu .menu-select {
+	padding: 0px 20px; transition:color 0.2s; color: rgb(80, 80, 80); line-height: 30px; display: block; cursor: pointer; -webkit-transition: color 0.2s; -moz-transition: color 0.2s; -o-transition: color 0.2s;
+}
+#menu li:hover .menu-select {
+	transition:color 0.2s; color: rgb(224, 224, 224); -webkit-transition: color 0.2s; -moz-transition: color 0.2s; -o-transition: color 0.2s;
+}
+#menu .menu-select select {
+	padding: 2px; font-size: 12px;
+}

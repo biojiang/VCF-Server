@@ -1,0 +1,321 @@
+/*
+ * GPS网站专用CSS，对style.css有一些覆盖。
+ */
+
+a { color: #0078CF; }
+input, select, textarea { width: 100%; border: 1px solid lightgrey; border-radius:5px;}
+input:active{
+    border:1px solid red;
+    border-color:#58ACFA;
+    -webkit-transition:border linear .2s,-webkit-box-shadow linear .5s;
+    -webkit-box-shadow:0 0 3px #58ACFA;
+    -moz-box-shadow: 0 0 3px #58ACFA;
+    box-shadow:0 0 3px #58ACFA;
+}
+input:focus{
+    border:1px solid red;
+    border-color:#58ACFA;
+    -webkit-transition:border linear .2s,-webkit-box-shadow linear .5s;
+    -webkit-box-shadow:0 0 3px #58ACFA;
+    -moz-box-shadow: 0 0 3px #58ACFA;
+    box-shadow:0 0 3px #58ACFA;
+}
+/* header
+------------------------------------------------ */
+.navbar-header label { color: white; margin-bottom: 0; font-size: 1.5em; padding: 1vw; }
+.navbar-header a { padding: 0; }
+.navbar-header #my-brand { padding: 15px; }
+.nav > li > a { padding-right: 5px; padding-left: 5px; }
+.my-navbar-right { float: right; }
+.my-navbar-right > a > div > span { width: 100%; text-align: center; background: black; }
+
+.nav-mod { background-color: lightgrey; border: 3px grey solid; }
+.nav-module { text-align: center; font-size: 2em; }
+.nav-module-selected { text-align: center; background-color: #0a3e7a}
+/* index
+------------------------------------------------- */
+
+.search-div { padding-left: 2px; padding-right: 2px; }
+.search-area { position: relative; margin-left: 0; margin-right: 0;}
+.search-btn { height: 100%; position: absolute; }
+.dataTable { margin-top: 1em; }
+.dataTable thead { background-color: #ffd105; }
+.dataTable tbody tr { background-color: white; }
+body { background-color: #FFF; }
+span.dynatree-selected a { font-style: normal; color: black; }
+.fixed-left { position: fixed; top: 50vh; left: 0; }
+.sticky-right { position: fixed; top: 13vw; left:200vw; padding: 5px;
+    background-color: #00ddff; border: 3px #000000 solid; width: 60vw; }
+.noMargin { margin-left: 0; margin-right: 0; }
+.navbar-inverse { background-color: #0a3e7a; }
+
+.navbar-right li { float: right; }
+.navbar-nav > li > a > div { background-color: black; border-radius: 4px; }
+.navbar-nav > li > .lan-switch { padding-top: 30px; padding-bottom: 0; }
+
+
+/* disease list on search result page
+-------------------------------------------------- */
+.btn-primary { width: auto; }
+#filter-disease { margin-left: 0; margin-right: 0; position: absolute; background-color: lightgrey;
+    padding: 10px; border-radius: 3px; border: 3px white;}
+.filter-input-div { margin-right: 0; margin-left: 0; }
+.filter-input { padding: 0.2em; width: 100%; background-color: #fff; }
+#filter-submit { margin-top: 1em; float: left; }
+#filter-cancel { float: right; }
+.filter-holder { position: relative; float: right }
+.info-input {
+    padding-left: 5px;
+    padding-right: 5px;
+    color: #fff;
+    font-size: 16px;
+    line-height: 27px;
+}
+.input-div {
+    padding-left: 0;
+    padding-right: 5px;
+
+
+}
+
+.block-disease { margin-bottom: 2em; border:2px solid #a5a5a5;border-radius: 8px; padding: 5px; background-color:#fbfbfb; font-size: 1.2em;}
+.title-disease { font-size: 1.2em; }
+.title-disease a { color: #0000cc; }
+.title-disease a:hover { color: orangered; }
+.gene-disease a { color: #0078CF; }
+.description-disease { text-align: justify; }
+.others-disease a b { color: green; font-size: 1.2em; }
+.others-disease i { color: grey; float: right; }
+
+.block-color { height: 20px; width: 20px; background: rgb(0,0,0); cursor:pointer;}
+
+#input-endPage { width: 4vw; }
+
+/* disease page
+-------------------------------------------------- */
+
+.detail-title { color: red; font-size: 2em; }
+.detail-description { text-align: justify; }
+
+.badge-phenotype { font-size: 1em; }
+#picDialog { width: 63vw; height: 63vh; }
+#cy { width: 60vw; height: 60vh; }
+
+
+/* gene page
+-------------------------------------------------- */
+#detail-gene { margin: 0; }
+
+/* database page
+-------------------------------------------------- */
+.row-search { height: 50px; }
+.input-search { height: 100%; }
+.search-case { height: 100%; background-color: #00c0ef }
+
+/*gene_diag */
+.row {
+    margin: 0 0;
+}
+
+/* my request
+-------------------------------------------------- */
+h3 a { color: #00b3ee; }
+.col-md-4 {
+    padding: 0 0;
+}
+
+.page-wrapper{
+    background-color: #fafafa;
+}
+
+.main-footer .footer-bottom{
+    margin:0 0;
+}
+
+.main{
+    min-height: 800px;
+}
+
+/*验证码位置控制*/
+#rnd-img-0{
+    padding-left: 15px;
+}
+
+input[type="radio"], input[type="checkbox"] {
+    display: inline;
+    width:auto;
+    height: auto;
+    margin-right: 5px;
+
+}
+#color_band{
+    display: inline;
+    width:auto;
+    height: auto;
+    margin-bottom: 2px;
+}
+#radio-disease{
+    font-size: 15px
+}
+#phenotype-cloud-container{
+    height: 15vw;
+    width:100%;
+    overflow: hidden;
+    border: 1px solid #ccc;
+}
+
+.navselect2{
+    width: 240px;
+}
+.search-div li{
+    width: auto;
+}
+#filter-reset {
+    margin-top: 1em;
+    float: right;
+}
+/*processbar in gene_diag*/
+.ui-progressbar {
+    position: relative;
+    height:10px
+}
+.ui-progressbar-value {
+    background : #81c141;
+}
+.progress-label {
+    position: absolute;
+    left: 50%;
+    top: 4px;
+    font-weight: bold;
+    text-shadow: 1px 1px 0 #fff;
+}
+.progress{
+    text-align: center;
+}
+
+#toolbox {
+    text-align: right;
+    font-size: 20px;
+
+}
+#toolbox a{
+    color: #000000;
+    padding: 0px 4px;
+}
+#toolbox a:hover{
+    color: #ffd105;
+}
+
+#colsModal .modal-dialog{
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+#colsModal .modal-content{
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+}
+
+#colsModal .modal-body{
+    overflow-y: scroll;
+    position: absolute;
+    top: 55px;
+    bottom: 65px;
+    width: 100%;
+}
+
+#colsModal .modal-footer{
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+}
+
+
+#configModal .config-modal{
+    border: 1px solid #e3e3e3;
+    background-color: #eeeeee;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+}
+
+#configModal .config-modal-content{
+    background-color: #f5f5f5;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    overflow-y: scroll;
+    height: 180px;
+
+}
+
+#filter-table{
+    cellspacing:0px;
+    width:100%;
+    border: 0px;
+}
+
+.clearfix:after {
+    clear: both;
+    display: block;
+    height: 0;
+    content: "";
+}
+
+.wareSort {
+    padding: 15px 8px 15px 7px;
+    border: 1px solid #ddd;
+    background-color: #f6f6f6;
+}
+.wareSort ul {
+    float: left;
+    width: 410px;
+    height: 600px;
+    overflow-y: scroll;
+    padding: 10px;
+    border: 1px solid #ddd;
+    margin-right: 7px;
+    margin-left: 8px;
+    background-color: #fff;
+}
+.sortDiv {
+    float: left;
+    width: 410px;
+    height: 600px;
+    overflow-y: scroll;
+    padding: 10px;
+    border: 1px solid #ddd;
+    margin-right: 7px;
+    margin-left: 8px;
+    background-color: #fff;
+}
+.sortDiv ul{
+    width: 100%;
+    border: 1px solid lightgrey;
+    border-radius: 5px;
+    height: auto;
+}
+.wareSort ul li a {
+    display: block;
+    padding-right: 25px;
+    padding-left: 10px;
+    border: 1px solid #fff;
+    line-height: 28px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.wareSort ul li a:hover {
+    color: #52bea6;
+}
+.wareSort ul li.active a {
+    border-color: #52bea6;
+    background: #cefff4;
+    color: #52bea6;
+}
+

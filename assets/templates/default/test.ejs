@@ -1,0 +1,19 @@
+<% include ./header.ejs %>
+
+
+<script>
+    var app = angular.module('myApp', []);
+    app.controller('myCtrl', function($scope) {
+        $scope.myCount = 0;
+
+        $scope.addCount = function(){
+            $scope.myCount++;
+        }
+    });
+</script>
+<p>
+    {{ myCount }}
+</p>
+<button ng-click="addCount()" class="btn">+1</button>
+
+<% include ./footer.ejs %>
