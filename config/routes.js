@@ -52,11 +52,6 @@ module.exports.routes = {
         action: 'api'
     },
 
-    '/checkExists':{
-      controller:'IndexController',
-        action:'checkExists'
-    },
-
   '/signIn': {
       controller: 'IndexController',
       action: 'signIn'

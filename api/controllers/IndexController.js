@@ -17,8 +17,10 @@ var argv = require('yargs');
 var URI = require('urijs');
 var pako = require('pako');
 //var dynamicDir = '.tmp/uploads/';
-//var vcfpath = '/var/www/cgi-bin/MDPA/GPS_data/user/';
-var vcfpath = curDir+'/cloud/';
+var vcfpath = '/data/users/';
+//var vcfpath = curDir+'/cloud/';
+var hostname = "http://172.17.0.1/cgi-bin/VCF-Server/";
+//var hostname = "https://www.diseasegps.org/cgi-bin/MDPA/";
 
 /**
  * Construct an array of [ 1, 2, ..., n ]
@@ -224,48 +226,6 @@ module.exports = {
     },
 
     /**
-     *check email and username 
-     *
-     */
-
-    checkExists: function(req,res,next) {
-        var userName;
-        if(req.param("type") === 'username')
-        {
-            userName = req.param("username").trim().toLowerCase();
-            User.find({name: userName}).then(function (user) {
-                if(user.length >0){
-                    res.send(false);
-                    return;
-                }
-                else{
-                    res.send(true);
-                    return;
-                }
-
-            });
-
-
-        }
-        else if(req.param("type") === 'login')
-        {
-            userName = req.param("username").trim().toLowerCase();
-            User.find({name: userName}).then(function (user) {
-                if(user.length >0){
-                    res.send(true);
-                    return;
-                }
-                else{
-                    res.send(false);
-                    return;
-                }
-
-            });
-
-
-        }
-    },
-    /**
      * 登录验证，或登出
      * @param req
      * @param res
@@ -319,15 +279,6 @@ module.exports = {
                 name: usrName,
                 password: psw
             }).then(function (users) {
-                if (users.length < 1){
-                    res.send('exist');
-                    res.locals.navMod = 0;
-                    req.session.currentDir = '/';
-                    req.session.study = 0;
-                    //return quickTemplate(req, res);
-                }
-                else {
-
                     req.session.userName = usrName;
                     req.session.currentDir = '/';
                     req.session.study = 0;
@@ -335,7 +286,6 @@ module.exports = {
                     //return quickTemplate(req, res);
                     res.send('success');
 
-                }
             }, function(err){
                 res.send('error');
             });
@@ -535,7 +485,7 @@ module.exports = {
 
         var fileName = req.param("fileName").trim();
         var filter = req.param("filter").trim();
-        var url = new URI("https://www.diseasegps.org/cgi-bin/MDPA/view/ViewVariants.cgi")
+        var url = new URI(hostname+"view/ViewVariants.cgi")
                 .query({user: userName, filename: fileName, filter: filter,dir:currentDir});
         //console.log(url.toString());
         http('get', url.toString()).then(function (result) {
@@ -581,7 +531,7 @@ module.exports = {
             eng = 1;
         }
         var fileName = req.param("fileName").trim();
-        var url = new URI("https://www.diseasegps.org/cgi-bin/MDPA/view/ViewSelect.cgi")
+        var url = new URI(hostname+"view/ViewSelect.cgi")
             .query({user: userName, filename: fileName,dir:currentDir,eng:eng});
         //console.log(url.toString());
         http('get', url.toString()).then(function (result) {
@@ -803,7 +753,7 @@ module.exports = {
                 res.locals.study = req.session.study;
                 res.locals.navMod = 4;
 
-                var url = new URI("https://www.diseasegps.org/cgi-bin/MDPA/proc/Import2DBQueue.cgi")
+                var url = new URI(hostname+"proc/Import2DBQueue.cgi")
                     .query({
                         user: userName,
                         filename: filename,
@@ -853,7 +803,7 @@ module.exports = {
                 res.locals.study = req.session.study;
                 res.locals.navMod = 1;
 
-                var url = new URI("https://www.diseasegps.org/cgi-bin/MDPA/anno/ImportAnnoDB.cgi")
+                var url = new URI(hostname+"anno/ImportAnnoDB.cgi")
                     .query({
                         user: userName,
                         filename: filename,
@@ -896,7 +846,7 @@ module.exports = {
         //res.locals.currentDir = req.session.currentDir;
         //res.locals.study = req.session.study;
         //res.locals.navMod = 1;
-        var url = new URI("https://www.diseasegps.org/cgi-bin/MDPA/proc/DeleteRecord.cgi")
+        var url = new URI(hostname+"proc/DeleteRecord.cgi")
             .query({user: userName,
                 filename: filename,
                 dir:currentDir
@@ -923,7 +873,7 @@ module.exports = {
 
         var fileName = req.param("fileName").trim();
         var prog = req.param("prog").trim();
-        var url = new URI("https://www.diseasegps.org/cgi-bin/MDPA/proc/Monitor.cgi")
+        var url = new URI(hostname+"proc/Monitor.cgi")
             .query({user:userName,
                     filename: fileName,
                     dir:currentDir,
@@ -953,7 +903,7 @@ module.exports = {
         }
 
         var fileName = req.param("fileName").trim();
-        var url = new URI("https://www.diseasegps.org/cgi-bin/MDPA/view/ViewHeaderFlat.cgi")
+        var url = new URI(hostname+"view/ViewHeaderFlat.cgi")
             .query({user:userName,
                 filename: fileName,
                 dir:currentDir,
@@ -984,7 +934,7 @@ module.exports = {
         }
 
         var fileName = req.param("fileName").trim();
-        var url = new URI("https://www.diseasegps.org/cgi-bin/MDPA/index/IndexHelper.cgi")
+        var url = new URI(hostname+"index/IndexHelper.cgi")
             .query({user:userName,
                 filename: fileName,
                 dir:currentDir,
@@ -1028,7 +978,7 @@ module.exports = {
         {
             type = 'add';
         }
-        var url = new URI("https://www.diseasegps.org/cgi-bin/MDPA/index/IndexBuild.cgi")
+        var url = new URI(hostname+"index/IndexBuild.cgi")
             .query({user:userName,
                 filename: fileName,
                 dir:currentDir,
@@ -1058,7 +1008,7 @@ module.exports = {
         var fileName = req.param("fileName").trim();
         var field = req.param("field").trim();
         var item = req.param("item").trim();
-        var url = new URI("https://www.diseasegps.org/cgi-bin/MDPA/filter/FilterHelper.cgi")
+        var url = new URI(hostname+"filter/FilterHelper.cgi")
             .query({user:userName,
                 filename: fileName,
                 dir:currentDir,
@@ -1083,7 +1033,7 @@ module.exports = {
         var opt = req.param("opt").trim();
         var val = req.param("val").trim();
         var sample = req.param("sample").trim();
-        var url = new URI("https://www.diseasegps.org/cgi-bin/MDPA/filter/FilterConstructor.cgi")
+        var url = new URI(hostname+"filter/FilterConstructor.cgi")
             .query({id:id,
                 opt: opt,
                 value:val,
@@ -1115,7 +1065,7 @@ module.exports = {
         var filter = req.param("filter").trim();
         //console.log(fileName);
 
-        var url = new URI("https://www.diseasegps.org/cgi-bin/MDPA/view/ViewItemsFlat.cgi")
+        var url = new URI(hostname+"view/ViewItemsFlat.cgi")
             .query({user:userName,
                 filename: fileName,
                 dir:currentDir,
@@ -1155,7 +1105,7 @@ module.exports = {
 
         var fileName = req.param("fileName").trim();
         var filter = req.param("filter").trim();
-        var url = new URI("https://www.diseasegps.org/cgi-bin/MDPA/export/ExportCSV.cgi")
+        var url = new URI(hostname+"export/ExportCSV.cgi")
             .query({user:userName,
                 filename: fileName,
                 dir:currentDir,
@@ -1196,7 +1146,7 @@ module.exports = {
 
         var fileName = req.param("fileName").trim();
         var field = req.param("field").trim();
-        var url = new URI("https://www.diseasegps.org/cgi-bin/MDPA/anno/AnnoHelper.cgi")
+        var url = new URI(hostname+"anno/AnnoHelper.cgi")
             .query({user:userName,
                 filename: fileName,
                 field:field,
@@ -1233,7 +1183,7 @@ module.exports = {
         {
             des = req.param("des").trim();
         }
-        var url = new URI("https://www.diseasegps.org/cgi-bin/MDPA/anno/AnnoVCF.cgi")
+        var url = new URI(hostname+"anno/AnnoVCF.cgi")
             .query({user: userName,
                 filename: fileName,
                 dir: currentDir,  //dir should be changed to the actual path
@@ -1288,7 +1238,7 @@ module.exports = {
         if(id === 'ListCustDB')
         {
             var userName = req.session.userName;
-            var url = new URI("https://www.diseasegps.org/cgi-bin/MDPA/anno/ListCustomDB.cgi").query({user:userName});
+            var url = new URI(hostname+"anno/ListCustomDB.cgi").query({user:userName});
             //console.log(url.toString());
             http.get(url.toString()).then(function(resultJson){
                 res.json(resultJson);
@@ -1300,15 +1250,7 @@ module.exports = {
             var fileName = req.param("fileName").trim();
             var hg = req.param("hg").trim();
             var dbname = req.param("dbname").trim();
-            var url = new URI("https://www.diseasegps.org/cgi-bin/MDPA/anno/RemoveCustomDB.cgi").query({user:userName,filename:fileName,dir:'/db',genome_version:hg,dbname:dbname});
-            http.get(url.toString()).then(function(resultJson){
-                res.json(resultJson);
-            });
-        }
-        if(id === 'Select')
-        {
-            var query = req.param("query").trim();
-            var url = new URI("https://www.diseasegps.org/cgi-bin/MDPA/api/SearchDB.cgi").query({query:query});
+            var url = new URI(hostname+"anno/RemoveCustomDB.cgi").query({user:userName,filename:fileName,dir:'/db',genome_version:hg,dbname:dbname});
             http.get(url.toString()).then(function(resultJson){
                 res.json(resultJson);
             });

@@ -133,35 +133,11 @@
 
                 <ul class="nav nav-tabs" id="myTab">
                     <li class="active">
-                        <a href="#bodyFunction" id='tab-function' data-toggle="tab"><% if (lan == 'eng') { %>Variants Function<% } else { %>位点功能<% } %></a>
-                    </li>
-                    <li class="">
-                        <a href="#bodyFrequency" id='tab-frequency' data-toggle="tab"><% if (lan == 'eng') { %>Frequency<% } else { %>等位基因频率<% } %></a>
-                    </li>
-                    <li class="">
-                        <a href="#bodyPrediction" id='tab-prediction' data-toggle="tab"><% if (lan == 'eng') { %>Prediction<% } else { %>致病性预测<% } %></a>
-                    </li>
-                    <li class="">
-                        <a href="#bodyCustom" id='tab-custom' data-toggle="tab"><% if (lan == 'eng') { %>Custom<% } else { %>自定义<% } %></a>
+                        <a href="#bodyCustom" id='tab-custom' data-toggle="tab"><% if (lan == 'eng') { %>Custom Annotation Database<% } else { %>自定义注释数据库<% } %></a>
                     </li>
                 </ul>
             <div class="tab-content">
-                <div class="modal-body tab-pane active" id="bodyFunction">
-                    <a href="javascript:void(0)" onclick="selectAll('funTree')"><% if (lan == 'eng') { %>Select all<% } else { %>全选<% } %></a> -
-                    <a href="javascript:void(0)" onclick="deselectAll('funTree')"><% if (lan == 'eng') { %>Deselect all<% } else { %>清空<% } %></a>
-                    <div id="funTree"></div>
-                </div>
-                <div class="modal-body tab-pane" id="bodyFrequency">
-                    <a href="javascript:void(0)" onclick="selectAll('freqTree')"><% if (lan == 'eng') { %>Select all<% } else { %>全选<% } %></a> -
-                    <a href="javascript:void(0)" onclick="deselectAll('freqTree')"><% if (lan == 'eng') { %>Deselect all<% } else { %>清空<% } %></a>
-                    <div id="freqTree"></div>
-                </div>
-                <div class="modal-body tab-pane" id="bodyPrediction">
-                    <a href="javascript:void(0)" onclick="selectAll('predTree')"><% if (lan == 'eng') { %>Select all<% } else { %>全选<% } %></a> -
-                    <a href="javascript:void(0)" onclick="deselectAll('predTree')"><% if (lan == 'eng') { %>Deselect all<% } else { %>清空<% } %></a>
-                    <div id="predTree"></div>
-                </div>
-                <div class="modal-body tab-pane" id="bodyCustom">
+                <div class="modal-body tab-pane active" id="bodyCustom">
                     <a href="javascript:void(0)" onclick="selectAll('custTree')"><% if (lan == 'eng') { %>Select all<% } else { %>全选<% } %></a> -
                     <a href="javascript:void(0)" onclick="deselectAll('custTree')"><% if (lan == 'eng') { %>Deselect all<% } else { %>清空<% } %></a>
                     <div id="custTree"></div>
@@ -252,49 +228,6 @@
         $("#FileName").val(filename);
         //初始化树形图
         $.ui.dynatree.nodedatadefaults["icon"] = false;
-        $("#funTree").dynatree({
-            fx: {height: "toggle", duration: 300},
-            autoFocus: false,
-            checkbox: true,
-           //persist: true,
-            selectMode: 3,
-            onActivate: function(node){},
-            initAjax: {
-                url: api,
-                data: {'fileName': filename, 'field':'Function'}
-            }
-
-        });
-        $("#funTree").dynatree("getTree").reload();
-        $("#freqTree").dynatree({
-            fx: {height: "toggle", duration: 300},
-            autoFocus: false,
-            checkbox: true,
-          //persist: true,
-            selectMode: 3,
-            onActivate: function(node){},
-            initAjax: {
-                url: api,
-                data: {'fileName': filename, 'field':'Frequency'}
-            }
-
-        });
-        $("#freqTree").dynatree("getTree").reload();
-        $("#predTree").dynatree({
-            fx: {height: "toggle", duration: 300},
-            autoFocus: false,
-            checkbox: true,
-         // persist: true,
-            selectMode: 3,
-            onActivate: function(node){},
-            initAjax: {
-                url: api,
-                data: {'fileName': filename, 'field':'Prediction'}
-            }
-
-        });
-        $("#predTree").dynatree("getTree").reload();
-
         $("#custTree").dynatree({
             fx: {height: "toggle", duration: 300},
             autoFocus: false,
@@ -313,66 +246,6 @@
     function  sendTree()
     {
         var nodes = {};
-        var sNodes = $("#funTree").dynatree("getSelectedNodes");
-        if(sNodes.length != 0)
-        {
-            sNodes.forEach(function(v,i,arr){
-                //alert(v.data.key);
-                var pNode = v.getParent();
-                if( pNode.data.key !== '_1')
-                {
-                    if(typeof nodes[pNode.data.key] === undefined)
-                    {
-                        nodes[pNode.data.key] = v.data.key;
-                    }
-                    else
-                    {
-                        nodes[pNode.data.key] = nodes[pNode.data.key]+','+ v.data.key;
-                    }
-                }
-            });
-
-        }
-        sNodes = $("#freqTree").dynatree("getSelectedNodes");
-        if(sNodes.length != 0)
-        {
-            sNodes.forEach(function(v,i,arr){
-                //alert(v.data.key);
-                var pNode = v.getParent();
-                if( pNode.data.key != '_1')
-                {
-                    if(nodes[pNode.data.key] == undefined)
-                    {
-                        nodes[pNode.data.key] = v.data.key;
-                    }
-                    else
-                    {
-                        nodes[pNode.data.key] = nodes[pNode.data.key]+','+ v.data.key;
-                    }
-                }
-            });
-
-        }
-        sNodes = $("#predTree").dynatree("getSelectedNodes");
-        if(sNodes.length != 0)
-        {
-            sNodes.forEach(function(v,i,arr){
-                //alert(v.data.key);
-                var pNode = v.getParent();
-                if( pNode.data.key != '_1')
-                {
-                    if(nodes[pNode.data.key] == undefined)
-                    {
-                        nodes[pNode.data.key] = v.data.key;
-                    }
-                    else
-                    {
-                        nodes[pNode.data.key] = nodes[pNode.data.key]+','+ v.data.key;
-                    }
-                }
-            });
-
-        }
         sNodes = $("#custTree").dynatree("getSelectedNodes");
         if(sNodes.length != 0)
         {
