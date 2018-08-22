@@ -1250,7 +1250,7 @@ module.exports = {
             var fileName = req.param("fileName").trim();
             var hg = req.param("hg").trim();
             var dbname = req.param("dbname").trim();
-            var url = new URI(hostname+"anno/RemoveCustomDB.cgi").query({user:userName,filename:fileName,dir:'/db',genome_version:hg,dbname:dbname});
+            var url = new URI(hostname+"anno/RemoveCustomDB.cgi").query({user:userName,filename:fileName,dir:'/.db',genome_version:hg,dbname:dbname});
             http.get(url.toString()).then(function(resultJson){
                 res.json(resultJson);
             });
