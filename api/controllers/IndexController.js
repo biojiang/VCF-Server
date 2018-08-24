@@ -38,7 +38,7 @@ function getNArray(n){
  * 生成str的MD5
  */
 function myMD5(str) {
-    str += 'TBDL';
+    //str += 'TBDL';
     var md5sum = Crypto.createHash('md5');
     md5sum.update(str);
     str = md5sum.digest('hex');
@@ -276,9 +276,8 @@ module.exports = {
             var usrName = req.param("loginname").trim().toLowerCase();
             //var psw = myMD5(req.param("loginpassword"));
             var psw = req.param("loginpassword");
-            var url = new URI(hostname+"proc/CheckUser.cgi")
-                .query({user: userName,passwd:psw});
-            //console.log(url.toString());
+           var url = new URI(hostname+"proc/CheckUser.cgi")
+               .query({user: usrName,passwd:psw});
             http('get', url.toString()).then(function (result) {
                 if(result.res === 1)
                 {
@@ -289,7 +288,7 @@ module.exports = {
                 }
                 else
                 {
-                    res.send('error');
+                    res.send('exist');
                 }
             });
 
