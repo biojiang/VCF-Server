@@ -19,7 +19,7 @@ var pako = require('pako');
 //var dynamicDir = '.tmp/uploads/';
 var vcfpath = '/data/users/';
 //var vcfpath = curDir+'/cloud/';
-var hostname = "http://172.17.0.1/cgi-bin/VCF-Server/";
+var hostname = "http://localhost/cgi-bin/VCF-Server/";
 //var hostname = "https://www.diseasegps.org/cgi-bin/MDPA/";
 
 /**
