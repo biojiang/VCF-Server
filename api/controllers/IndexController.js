@@ -274,21 +274,25 @@ module.exports = {
         else
         {
             var usrName = req.param("loginname").trim().toLowerCase();
-            var psw = myMD5(req.param("loginpassword"));
-            User.find({
-                name: usrName,
-                password: psw
-            }).then(function (users) {
+            //var psw = myMD5(req.param("loginpassword"));
+            var psw = req.param("loginpassword");
+            var url = new URI(hostname+"proc/CheckUser.cgi")
+                .query({user: userName,passwd:psw});
+            //console.log(url.toString());
+            http('get', url.toString()).then(function (result) {
+                if(result.res === 1)
+                {
                     req.session.userName = usrName;
                     req.session.currentDir = '/';
                     req.session.study = 0;
-                    //res.locals.navMod = 1;
-                    //return quickTemplate(req, res);
                     res.send('success');
-
-            }, function(err){
-                res.send('error');
+                }
+                else
+                {
+                    res.send('error');
+                }
             });
+
         }
 
     },
