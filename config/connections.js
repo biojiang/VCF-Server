@@ -42,9 +42,9 @@ module.exports.connections = {
      ***************************************************************************/
     someMysqlServer: {
         adapter: 'sails-mysql',
-        host: process.env.DATABASE_HOST || "202.121.178.141" ,
+        host: process.env.DATABASE_HOST ,
         user: 'root',
-        password: 'Syjcb@225',
+        password: '',
         database: 'MDPA',
         port: process.env.DATABASE_PORT || 3306
     },
