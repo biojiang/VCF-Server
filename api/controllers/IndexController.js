@@ -656,7 +656,7 @@ module.exports = {
             }
         }
         var filename = req.param('fileName').trim();
-
+        var filename_gz = filename.replace(/.vcf/i,".vcf.gz");
 
         var filepath = vcfpath+userName+currentDir+'/';
         if(db != undefined)
@@ -669,9 +669,15 @@ module.exports = {
                         {
                             res.json({res: 2});
                         }
-                        else
-                        {
-                            res.json({res: 1});
+                        else {
+                            fs.exists(filepath + filename_gz, function (exists) {
+                                if (exists) {
+                                    res.json({res: 2});
+                                }
+                                else {
+                                    res.json({res: 1});
+                                }
+                            });
                         }
                     });
                 }
