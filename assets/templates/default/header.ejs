@@ -96,12 +96,6 @@
 
     //验证登录并发送
     function checkSignIn(form) {
-        var t = $('form').serializeArray();
-        var d = {};
-        $.each(t, function() {
-            d[this.name] = this.value;
-        });
-        alert(JSON.stringify(d));
         $(form).ajaxSubmit({
         async: false,
         complete: function (XHR, TS){
