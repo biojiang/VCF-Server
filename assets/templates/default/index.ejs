@@ -680,9 +680,9 @@
                         window.location.reload();
                     }
                     else if (data.res == 0) {
-                        var errMsg = "<% if (lan == "eng") { %>Error!<% } else { %>删除研究出错
-                    }！<% } %>";
+                        var errMsg = "<% if (lan == "eng") { %>Error!<% } else { %>删除研究出错!<% } %>";
                     alert(errMsg);
+                    }
                     else if (data.res == 2) {
                         var errMsg = "<% if (lan == "eng") { %>Please delete all the VCF in the study! <% } else { %>请先删除研究下的所有VCF文件！<% } %>";
                         alert(errMsg);
