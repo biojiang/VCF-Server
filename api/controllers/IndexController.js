@@ -1357,7 +1357,6 @@ module.exports = {
                 var adduser = req.param("adduser").trim();
                 var addpsw = req.param("addpasswd").trim();
                 var url = new URI(hostname+"proc/AddUser.cgi").query({user:adduser,passwd:addpsw});
-                console.log(url.toString());
                 http.get(url.toString()).then(function(resultJson){
                     res.json(resultJson);
                 });
@@ -1375,7 +1374,6 @@ module.exports = {
             {
                 var deluser = req.param("deluser").trim();
                 var url = new URI(hostname+"proc/RemoveUser.cgi").query({user:deluser});
-                console.log(url.toString());
                 http.get(url.toString()).then(function(resultJson){
                     res.json(resultJson);
                 });

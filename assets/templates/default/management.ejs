@@ -27,7 +27,7 @@
             </div>
             <div>
                 <label class="col-md-10" for="regname" >
-                <button class="btn btn-default pull-right" type="submit"><% if (lan == 'eng') { %>Login<% } else { %>登录<% } %></button>
+                <button class="btn btn-default pull-right" type="submit"><% if (lan == 'eng') { %>Add<% } else { %>添加<% } %></button>
                 </label>
             </div>
         </form>
@@ -119,7 +119,7 @@
                     }
                     else{
                         var errMsg = "<% if (lan == "eng") { %>Delete Error!<% } else { %>删除用户出错!<% } %>";
-                    alert(errMsg);
+                        alert(errMsg);
                     }
 
                 }
