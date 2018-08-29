@@ -17,9 +17,9 @@ var argv = require('yargs');
 var URI = require('urijs');
 var pako = require('pako');
 //var dynamicDir = '.tmp/uploads/';
-var vcfpath = '/data/users/';
-//var vcfpath = curDir+'/cloud/';
-var hostname = "http://localhost/cgi-bin/VCF-Server/";
+//var vcfpath = '/data/users/';
+var vcfpath = curDir+'/cloud/';
+var hostname = "http://172.17.200.104:8100/cgi-bin/VCF-Server/";
 //var hostname = "https://www.diseasegps.org/cgi-bin/MDPA/";
 
 /**
@@ -135,6 +135,75 @@ module.exports = {
         res.locals.fileName = fileName;
 
         return quickTemplate(req, res);
+    },
+    management: function(req, res, next) {
+        var userName = req.session.userName;
+        if(userName != 'admin')
+        {
+            var lan = req.param('lan');
+            if (typeof lan !== 'undefined' && lan !== '')
+            {
+                req.session.lan = lan;
+            }
+            res.locals.view = "index";
+            if(typeof req.session.userName === 'undefined' || req.session.userName === '')
+            {
+                if(typeof req.session.currentDir === 'undefined')
+                {
+                    req.session.currentDir = '/';
+                }
+                res.locals.currentDir = req.session.currentDir;
+                if(typeof req.session.tempDir === 'undefined')
+                {
+                    req.session.tempDir = '/'+ myMD5((new Date()).toTimeString() + Math.random());
+                    var dir = vcfpath+'public'+req.session.tempDir;
+                    fs.mkdir(dir,function(err){
+                        if(err)
+                        {
+                            console.error(err);
+                        }
+                        else
+                        {
+                            fs.chmod(dir,'0777',function (err)
+                            {
+                                if(err)
+                                {
+                                    console.log(err);
+                                }
+                            });
+                        }
+                    });
+                    res.locals.tempDir = req.session.tempDir;
+                }
+                else
+                {
+                    res.locals.tempDir = req.session.tempDir;
+                }
+
+
+                }
+                else
+                {
+                    res.locals.currentDir = req.session.currentDir;
+                }
+                if(typeof req.session.study === 'undefined')
+                {
+                    res.locals.study = 0;
+                }
+                else
+                {
+                    res.locals.study = req.session.study;
+                }
+
+                return quickTemplate(req, res);
+
+        }
+        else
+        {
+            res.locals.view = "management";
+            return quickTemplate(req, res);
+        }
+
     },
     /**
      * VCF Server
@@ -276,7 +345,7 @@ module.exports = {
             var usrName = req.param("loginname").trim().toLowerCase();
             //var psw = myMD5(req.param("loginpassword"));
             var psw = req.param("loginpassword");
-           var url = new URI(hostname+"proc/CheckUser.cgi")
+            var url = new URI(hostname+"proc/CheckUser.cgi")
                .query({user: usrName,passwd:psw});
             http('get', url.toString()).then(function (result) {
                 if(result.res === 1)
@@ -1264,6 +1333,59 @@ module.exports = {
                 res.json(resultJson);
             });
         }
+        if(id === 'MongoStat')
+        {
+            var userName = req.session.userName;
+            if(userName == 'admin')
+            {
+                var url = new URI(hostname+"proc/MongoStat.cgi");
+                http.get(url.toString()).then(function(resultJson){
+                    res.json(resultJson);
+                });
+            }
+            else
+            {
+                res.json({res:0});
+            }
+        }
+        if(id === 'AddUser')
+        {
+            var userName = req.session.userName;
+
+            if(userName == 'admin')
+            {
+                var adduser = req.param("adduser").trim();
+                var addpsw = req.param("addpasswd").trim();
+                var url = new URI(hostname+"proc/AddUser.cgi").query({user:adduser,passwd:addpsw});
+                console.log(url.toString());
+                http.get(url.toString()).then(function(resultJson){
+                    res.json(resultJson);
+                });
+            }
+            else
+            {
+                res.json({res:0});
+            }
+        }
+        if(id === 'RemoveUser')
+        {
+            var userName = req.session.userName;
+
+            if(userName == 'admin')
+            {
+                var deluser = req.param("deluser").trim();
+                var url = new URI(hostname+"proc/RemoveUser.cgi").query({user:deluser});
+                console.log(url.toString());
+                http.get(url.toString()).then(function(resultJson){
+                    res.json(resultJson);
+                });
+            }
+            else
+            {
+                res.json({res:0});
+            }
+        }
+
 
     },
 

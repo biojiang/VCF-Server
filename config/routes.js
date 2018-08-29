@@ -44,7 +44,10 @@ module.exports.routes = {
      controller: 'IndexController',
      action: 'VCFViewer'
     },
-
+    '/management': {
+        controller: 'IndexController',
+        action: 'management'
+    },
 
     //api用于请求后台数据
     '/api/:id': {

@@ -1,0 +1,132 @@
+<% include header.ejs %>
+<div class="container" id="container">
+    <% {if (lan == 'eng') { %> <h4>User Management</h4><% } else { %><h4>用户管理</h4><% }} %>
+    <table class="table table-hover table-striped">
+        <thead>
+        <tr class="sortable">
+            <th><% if (lan == 'eng') { %> User <% } else { %> 用户<% } %></th>
+            <th><% if (lan == 'eng') { %> Space <% } else { %> 占用大小<% } %></th>
+            <th><% if (lan == 'eng') { %> Date <% } else { %> 注册时间<% } %></th>
+            <th><% if (lan == 'eng') { %> Operation <% } else { %> 操作<% } %></th>
+        </tr>
+        </thead>
+        <tbody id="infolist"></tbody>
+    </table>
+    <div>
+        <% {if (lan == 'eng') { %> <h4>Add User</h4><% } else { %><h4>添加新用户</h4><% }} %>
+        <form id="regForm" action="/api/AddUser" method="post">
+            <div>
+                <label class="col-md-5" for="adduser" >
+                    <% if (lan == 'eng') { %>User name: <% } else { %>用户名：<% } %>
+                    <input id="adduser" name="adduser" type="text">
+                </label>
+                <label class="col-md-5" for="addpasswd">
+                    <% if (lan == 'eng') { %>Password: <% } else { %>密码：<% } %>
+                    <input id="addpasswd" name="addpasswd" type="text">
+                </label>
+            </div>
+            <div>
+                <label class="col-md-10" for="regname" >
+                <button class="btn btn-default pull-right" type="submit"><% if (lan == 'eng') { %>Login<% } else { %>登录<% } %></button>
+                </label>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    var api = '/api/MongoStat';
+    $.getJSON(api, function(result) {
+        $("#infolist").html("");
+        $.each(result, function(i, field) {
+
+            $("#infolist").append(
+                "<tr class='sortable'>"+
+                "<td>"+field.user+"</td>" +
+                "<td>"+field.usage+"</td>" +
+                "<td>"+field.date+"</td>" +
+                "<td><a href=\"javascript:removeUser('"+field.user+"')\"><% if (lan == 'eng') { %> Delete <% } else { %> 删除<% } %></a></td>" +
+                "</tr>"
+            );
+        });
+    });
+
+    function checkReg(form) {
+        $(form).ajaxSubmit({
+            async: false,
+            complete: function (XHR, TS){
+                var res = JSON.parse(XHR.responseText);
+                if (res.res === 1){
+                    var errMsg = "<% if (lan == "eng") { %>User add success!<% } else { %>用户添加成功！<%}%>";
+                    alert(errMsg);
+                    window.location.href = '/management';
+                }
+                else
+                {
+                    var errMsg = "<% if (lan == "eng") { %>User add failed!<% } else { %>用户添加失败！<%}%>";
+                    alert(errMsg);
+                    window.location.href = '/management';
+                }
+            }
+        });
+        return false;
+    }
+    $(function () {
+        $('#regForm').validate({
+            onfocusout:false,
+            rules: {
+                loginname: {
+                    required: true,
+                    minlength: 3
+                },
+                addpasswd: {
+                    required: true,
+                    minlength: 3,
+                    maxlength: 16
+                }},
+            messages: {
+                adduser: {
+                    required: "用户名不能为空",
+                    minlength: "用户名的最小长度为3",
+                },
+                addpasswd: {
+                    required: "密码不能为空",
+                    minlength: "密码长度不能少于3个字符",
+                    maxlength: "密码长度不能超过16个字符"
+
+                }
+            },
+            submitHandler: function (form) {
+                checkReg(form);
+            },
+
+        });
+    });
+
+    function removeUser(deluser)
+    {
+        var api = '/api/RemoveUser';
+        var msg = "<% if (lan == "eng") { %>Are you sure to delete?<% } else { %>确定删除？<% } %>";
+        if (confirm(msg)==true)
+        {
+            $.ajax({
+                url: api,
+                type: 'get',
+                datatype: 'json',
+                data: {deluser: deluser},
+                success: function (data) {
+                    if (data.res == 1) {
+                        window.location.reload();
+                    }
+                    else{
+                        var errMsg = "<% if (lan == "eng") { %>Delete Error!<% } else { %>删除用户出错!<% } %>";
+                    alert(errMsg);
+                    }
+
+                }
+
+            });
+        }
+    }
+</script>
+
+<% include footer.ejs %>

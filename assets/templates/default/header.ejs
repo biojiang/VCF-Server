@@ -186,12 +186,19 @@
                 <div class="top-right pull-right">
                     <!--Links Nav-->
                     <ul class="links-nav">
+
+
                         <li><% if (userName != '') {%>
                             <a href="#">
                                 <!--<% if (lan == 'eng') { %>My centre<% } else { %>个人中心<% } %>-->
                                 <%-userName%>
                             </a>
-                            <a href="javascript:loginout()">
+                            <% if(userName  == 'admin'){%>
+                            <a href="/management">
+                                <% if (lan == 'eng') { %>Management<% } else { %>管理<% } %>
+                            </a>
+                            <% } %>
+                            <a href="javascript:void(0);" onclick="loginout();">
                                 <% if (lan == 'eng') { %>Sign Out<% } else { %>退出登陆<% } %>
                             </a>
                             <% } else { %>
