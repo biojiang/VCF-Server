@@ -17,9 +17,9 @@ var argv = require('yargs');
 var URI = require('urijs');
 var pako = require('pako');
 //var dynamicDir = '.tmp/uploads/';
-//var vcfpath = '/data/users/';
-var vcfpath = curDir+'/cloud/';
-var hostname = "http://172.17.200.104:8100/cgi-bin/VCF-Server/";
+var vcfpath = '/data/users/';
+//var vcfpath = curDir+'/cloud/';
+var hostname = "http://localhost/cgi-bin/VCF-Server/";
 //var hostname = "https://www.diseasegps.org/cgi-bin/MDPA/";
 
 /**
