@@ -1,4 +1,4 @@
-<% include header.ejs %>
+<% include ./header2.ejs %>
 <link href="https://cdn.bootcss.com/datatables/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.datatables.net/buttons/1.4.2/css/buttons.dataTables.min.css" rel="stylesheet">
 <link rel="stylesheet" href="<%=static_dir%>/css/myStyle2.css">
@@ -35,19 +35,19 @@
                 <div class="col-md-12 info-input">
                     <table id="filter-table">
                         <thead>
-                            <tr>
-                                <td><% if (lan == 'eng') { %>Filter<% } else { %>筛选器<% } %></td>
-                                <td><% if (lan == 'eng') { %>Variants Number<% } else { %>变异位点数<% } %></td>
-                            </tr>
+                        <tr>
+                            <td><% if (lan == 'eng') { %>Filter<% } else { %>筛选器<% } %></td>
+                            <td><% if (lan == 'eng') { %>Variants Number<% } else { %>变异位点数<% } %></td>
+                        </tr>
                         </thead>
                         <tbody>
 
                         </tbody>
                         <tfoot>
-                            <tr>
-                                <td><button type='button' class='btn btn-danger btn-sm' onclick="filterBack()"><span class='fa fa-step-backward'></span><% if (lan == 'eng') { %> Step Backward<% } else { %> 回退一步<% } %></button></td>
-                                <td><button type='button' class='btn btn-warning btn-sm' data-toggle="modal" data-target="#filterModal" onclick="loadFilter()"><span class='fa fa-filter'></span><% if (lan == 'eng') { %> New Filter<% } else { %> 添加筛选<% } %></button></td>
-                            </tr>
+                        <tr>
+                            <td><button type='button' class='btn btn-danger btn-sm' onclick="filterBack()"><span class='fa fa-step-backward'></span><% if (lan == 'eng') { %> Step Backward<% } else { %> 回退一步<% } %></button></td>
+                            <td><button type='button' class='btn btn-warning btn-sm' data-toggle="modal" data-target="#filterModal" onclick="loadFilter()"><span class='fa fa-filter'></span><% if (lan == 'eng') { %> New Filter<% } else { %> 添加筛选<% } %></button></td>
+                        </tr>
                         </tfoot>
                     </table>
 
@@ -178,6 +178,7 @@
     var Num_input = function(group){return '<input id="sample_filter_value-'+group+'" value="0">'};
     var String_select = function(group){return '<select id="sample_field_op_list-'+group+'"><option value="in">=</option><option value="nin">≠</option></select>'};
     var Flag_select = function(group){return '<select id="flag_val-'+group+'"><option value="false">0</option><option value="true" selected>1</option></select>'};
+    var AllowNA = function(group){return '<input type="checkbox" id="allowNA-'+group+'" value="1" checked="checked"/>'};
     var Sample_checkbox = '';
 
     $.getJSON(api,
@@ -212,6 +213,7 @@
             areaCont += '<div class="col-md-4 text-left">Filter Name:</div><div class="col-md-8 text-left">'+k2+'</div>';
             areaCont += '<div class="col-md-4 text-left">Operator:</div><div class="col-md-8 text-left">'+Num_select(k1)+'</div>'
             areaCont += '<div class="col-md-4 text-left">Values:</div><div class="col-md-8 text-left">'+Num_input(k1)+'</div>';
+            areaCont += '<div class="col-md-4 text-left">Allow NA:</div><div class="col-md-8 text-left">'+AllowNA(k1)+'</div>';
         }
         else if(info[k1][k2]['Type'] == 'Flag')
         {
@@ -281,8 +283,7 @@
                     $('#' + id).select2({
                         data: d,
                         multiple: true,
-                        allowClear:true,
-                        tokenSeparators: [';'], // 分隔符
+                        allowClear:true
                     });
                 }
 
@@ -295,6 +296,7 @@
         var opt = '';
         var val;
         var samples = '';
+        var allow_na = 0;
         if(type == 'Flag')
         {
             val = $('#flag_val-'+group).val();
@@ -305,6 +307,10 @@
         {
             val = $('#sample_filter_value-'+group).val();
             opt = $('#sample_field_op_list-'+group).val();
+            if($('#allowNA-'+group).prop("checked"))
+            {
+                allow_na = 1;
+            }
         }
         else
         {
@@ -336,7 +342,7 @@
         var url = '/filters';
 
         $.getJSON(url,
-            {id:id,opt:opt,val:val,sample:samples},function (data) {
+            {id:id,opt:opt,val:val,sample:samples,na:allow_na},function (data) {
                 //alert(JSON.stringify(data));
                 var title = vid + " "+opt + " "+val;
                 if(filterList.length == 0)
@@ -350,6 +356,7 @@
                 {
                     filterList.push(JSON.stringify(data));
                     var jsonstr = '{"$and":['+filterList.join(',')+']}';
+                    //alert(JSON.stringify(jsonstr))
                     variants(fileName,vid,jsonstr,title);
                     loadTable(jsonstr,id,1);
 
@@ -367,7 +374,7 @@
 
             if(typeof data.res !== 'undefined')
             {
-                window.location.href = '/gene_diag';
+                window.location.href = '/VCF-Server';
             }
             else if(data.length > 0)
             {
@@ -387,18 +394,18 @@
                         else if(cols[j] == 'ID' && /^rs/.test(result[cols[j]]))
                         {
 
-                                if(/\;/.test(result[cols[j]]))
+                            if(/\;/.test(result[cols[j]]))
+                            {
+                                var items = result[cols[j]].split(";");
+                                for(var m=0;m<items.length;m++)
                                 {
-                                    var items = result[cols[j]].split(";");
-                                    for(var m=0;m<items.length;m++)
-                                    {
-                                        elems[j] += '<a href="https://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs='+items[m]+'" target="_blank">'+items[m]+'</a> ';
-                                    }
+                                    elems[j] += '<a href="https://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs='+items[m]+'" target="_blank">'+items[m]+'</a> ';
                                 }
-                                else
-                                {
-                                    elems[j] = '<a href="https://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs='+result[cols[j]]+'" target="_blank">'+result[cols[j]]+'</a>';
-                                }
+                            }
+                            else
+                            {
+                                elems[j] = '<a href="https://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs='+result[cols[j]]+'" target="_blank">'+result[cols[j]]+'</a>';
+                            }
 
                         }
                         else if(cols[j] == 'POS')
@@ -491,7 +498,7 @@
         {
             filterStr = '{}';
         }
-	//alert(filterStr);
+        //alert(filterStr);
         var api = '/export_csv?fileName='+fileName+'&filter='+filterStr;
         window.open(api);
     }
@@ -938,4 +945,4 @@
 
 
 
-<% include footer.ejs %>
+<% include ./footer2.ejs %>

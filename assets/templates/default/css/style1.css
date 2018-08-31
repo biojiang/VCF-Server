@@ -92,7 +92,7 @@ ul, li { list-style: none; padding: 0px; margin: 0px; }
 .btn-style-three { position: relative; padding: 6px 38px; line-height: 24px; text-transform: uppercase; background: #172745; color: #ffffff !important; font-size: 14px; display: block; font-weight: 700; width: 100%; border: 2px solid #172745 !important; font-family: 'Source Sans Pro', sans-serif; }
 .btn-style-three:hover { color: #172745 !important; border-color: #172745 !important; background: none; }
 .theme_color { color: #ffd105; }
-.preloader { position: fixed; left: 0px; top: 0px; width: 100%; height: 100%; z-index: 999999; background-color: #ffffff; background-position: center center; background-repeat: no-repeat; background-image: url(../img/icons/preloader.GIF); overflow: hidden; }
+.preloader { position: fixed; left: 0px; top: 0px; width: 100%; height: 100%; z-index: 999999; background-color: #ffffff; background-position: center center; background-repeat: no-repeat; background-image: url(../img/icons/preloader.gif); overflow: hidden; }
 /*** 
 
 ====================================================================

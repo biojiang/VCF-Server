@@ -1110,11 +1110,13 @@ module.exports = {
         var id = req.param("id").trim();
         var opt = req.param("opt").trim();
         var val = req.param("val").trim();
+        var na = req.param("na").trim();
         var sample = req.param("sample").trim();
         var url = new URI(hostname+"filter/FilterConstructor.cgi")
             .query({id:id,
                 opt: opt,
                 value:val,
+                na:na,
                 sample:sample,
             });
         http('get', url.toString()).then(function(resultJson){

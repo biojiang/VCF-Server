@@ -812,6 +812,10 @@
                         }
                         percent = data.percent;
                     }
+                    if(data.status == 'None')
+                    {
+                        $('#delete-'+i).removeAttr("disabled");
+                    }
                     progressbar.text(data.status);
                     progressbar.width(data.percent+'%');
                     $('#variants'+i).text(accounting.formatNumber(data.loaded));
