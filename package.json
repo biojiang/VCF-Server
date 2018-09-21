@@ -5,7 +5,10 @@
   "description": "a Sails application",
   "keywords": [],
   "dependencies": {
+    "connect-redis": "^1.4.5",
+    "ejs": "^2.3.4",
     "es6-promise": "^3.0.2",
+    "express": "^4.13.3",
     "grunt-contrib-clean": "^1.0.0",
     "grunt-contrib-coffee": "^1.0.0",
     "grunt-contrib-concat": "^1.0.0",
@@ -17,15 +20,18 @@
     "grunt-contrib-watch": "^1.0.0",
     "grunt-sails-linker": "^0.10.1",
     "grunt-sync": "^0.5.2",
+    "http": "0.0.0",
+    "log4js": "^1.1.1",
+    "moment": "^2.10.6",
+    "nodemailer": "2.3.0",
+    "pnglib": "0.0.1",
     "request-promise-json": "^1.0.4",
     "sails": "^0.11.2",
-    "sails-mysql": "^1.0.0",
+    "sails-mysql": "^0.11.3",
     "urijs": "^1.19.0",
     "yargs": "^9.0.1",
     "pako": "^1.0.6",
-    "find": "^0.2.9",
-    "rc": "^1.2.8",
-    "include-all": "^4.0.3"
+    "find": "^0.2.9"
   },
   "scripts": {
     "debug": "node debug app.js",
