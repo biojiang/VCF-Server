@@ -1003,7 +1003,7 @@ module.exports = {
             queryDir = '/'+sn.trim();
         }
 
-        var url = new URI("https://www.diseasegps.org/cgi-bin/MDPA/proc/Monitor.cgi")
+        var url = new URI(hostname+"/proc/Monitor.cgi")
             .query({user:userName,
                 filename: fileName,
                 dir:queryDir,
