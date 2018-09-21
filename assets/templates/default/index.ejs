@@ -169,6 +169,14 @@
 <div class="container">
     <div class="btn-toolbar">
         <% if (userName != '') {%>
+        <div>
+            <div class="col-sm-3 search-div">
+                <input type="text" id="file-searchInput" name="" value="" class="form-control" autocomplete="off" >
+            </div>
+            <button id="file-search" onclick="searchFile()" class="btn btn-default">
+                <i class="glyphicon glyphicon-search"></i>
+            </button>
+        </div>
             <% if(study == 0) {%>
         <button type="button" class="btn btn-default pull-right" data-toggle="modal" data-target="#CustDBModal" onclick="LoadCustDB()"><span class="fa fa-cog" aria-hidden="true"></span><% if (lan == 'eng') { %> Custum DB <% } else { %> 配置自定义库<% } %></button>
         <button type="button" class="btn btn-default pull-right" data-toggle="modal" data-target="#createFolderModal"><span class="fa fa-flask" aria-hidden="true"></span><% if (lan == 'eng') { %> New Study <% } else { %> 新研究<% } %></button>
@@ -187,7 +195,7 @@
     <div id="errMsg"><% if(userName == '' && currentDir == '/tmp'){if (lan == 'eng') { %> <h4 class="text-danger">Notice: VCF files in this folder will be <strong><u>deleted</u></strong> after close, please download/export them to local disk on time. </h4><% } else { %><h4 class="text-danger">注意：该目录下的VCF文件在浏览器退出后将被<strong><u>清除</u></strong>，请及时导出到本地！</h4><% }} %></div>
     <table class="table table-hover table-striped">
         <thead>
-        <tr class="sortable">
+        <tr class="sortable" id="fileTableTr">
             <% if(study == 0) {%>
                 <th><% if (lan == 'eng') { %> Type <% } else { %> 类型<% } %></th>
                 <th><% if (lan == 'eng') { %> Study Name <% } else { %> 研究名<% } %></th>
@@ -220,6 +228,72 @@
     </ul>
 
 </div>
+
+<script>
+    function searchFile()
+    {
+        var keyword = $("#file-searchInput").val();
+        var lan = "<%-lan%>";
+        if(keyword == undefined)
+        {
+            var study = "<%-study%>";
+            $("#fileTableTr").empty();
+            if(study == 0)
+            {
+                if(lan == 'eng')
+                {
+                    $("#fileTableTr").append(
+                        '<th> Type</th><th> Study Name</th><th> File Number</th><th> Time</th><th> Action</th>'
+                    );
+                }
+                else
+                {
+                    $("#fileTableTr").append(
+                        '<th> 类型</th><th> 研究名</th><th> 文件数</th><th> 修改时间</th><th> 操作</th>'
+                    );
+                }
+
+            }
+            else
+            {
+                if(lan == 'eng')
+                {
+                    $("#fileTableTr").append(
+                        '<th> Type</th><th> Name</th><th> Size</th><th> Variants</th><th> Time</th><th> Action</th><th> Status</th>'
+                    );
+                }
+                else
+                {
+                    $("#fileTableTr").append(
+                        '<th> 类型</th><th> 文件名</th><th> 文件大小</th><th> 变异数</th><th> 修改时间</th><th> 操作</th><th> 导入状态</th>'
+                    );
+                }
+
+            }
+            LoadFiles();
+        }
+        else
+        {
+            $("#fileTableTr").empty();
+            if(lan == 'eng')
+            {
+                $("#fileTableTr").append(
+                    '<th> Type</th><th> Study Name</th><th> Study Name</th><th> Time</th><th> Action</th><th> Status</th>'
+                );
+            }
+            else
+            {
+                $("#fileTableTr").append(
+                    '<th> 类型</th><th> 文件名</th><th> 研究名</th><th> 修改时间</th><th> 操作</th><th> 导入状态</th>'
+                );
+            }
+            LoadFiles(keyword);
+
+        }
+
+    }
+</script>
+
 <script>
     function funTree(user,filename) {
         var fn = filename.replace(/.vcf/i,".anno.vcf");
@@ -483,55 +557,108 @@
 </script>
 
 <script>
-    var dir = '/files';
-    var username = '<%-userName%>';
-    $.getJSON(dir, function(result) {
-        $("#fileList").html("");
-        $.each(result, function(i, field) {
-            if(field.IsDirectory == true)
-            {
-                $("#fileList").prepend(
-                    "<tr class='sortable'>"+
-                    "<td><span class='fa fa-flask' aria-hidden='true'></span></td>" +
-                    "<td>"+field.Name+"</td>" +
-                    "<td>"+field.fileNum+"</td>" +
-                    "<td>"+field.Time+"</td>" +
-                    "<td>"+
-                    "<button type='button' class='btn btn-default btn-sm' onclick='openStudy(\""+field.Name+"\")'><span class='glyphicon glyphicon-folder-open'></span>" + "<% if (lan == 'eng') { %> Open <% } else { %> 打开<% } %>" + "</button>"+
-                    "<button type='button' class='btn btn-default btn-sm' onclick='studyDelete(\""+field.Name+"\",\""+field.fileNum+"\")'><span class='glyphicon glyphicon-remove'></span>" + "<% if (lan == 'eng') { %> Delete <% } else { %> 删除<% } %>" + "</button></td>" +
-                    //"<td><span>尚未导入</span></td>" +
-                    "<td></td>"+
-                    "</tr>"
-                );
-            }
-            else
-            {
-                $("#fileList").append(
-                    "<tr class='sortable'>"+
-                    "<td><span class='glyphicon glyphicon-file'></span></td>" +
-                    "<td id=\"file"+i+"\">"+field.Name+"</td>" +
-                    "<td>"+(field.Size/1048576).toFixed(2)+" MB"+"</td>" +
-                    "<td id=\"variants"+i+"\">0</td>" +
-                    "<td>"+field.Time+"</td>" +
-                    "<td><button type='button' onclick=\"window.location.href='/vcf_viewer?fileName="+field.Name+"'\" id='view-"+i+"' class='btn btn-default btn-sm'><span class='glyphicon glyphicon-cloud'></span>" + "<% if (lan == 'eng') { %> Analyze <% } else { %> 解析<% } %>" + "</button>" +
-                    "<button type='button' id='anno-"+ i +"' onclick=\"funTree('"+username+"','"+field.Name+"')\" class='btn btn-default btn-sm' data-toggle='modal' data-target='#annotateFileModal'><span class='glyphicon glyphicon-list-alt'></span>" + "<% if (lan == 'eng') { %> Annotate <% } else { %> 注释<% } %>"+"</button>" +
-                    "<a href='/file/"+field.Name + "'type='button' id='download-"+i+"' class='btn btn-default btn-download btn-sm'><span class='glyphicon glyphicon-download'></span>" + "<% if (lan == 'eng') { %> Download <% } else { %> 下载<% } %>" + "</a>" <% if (userName !== '' ||(userName === '' && currentDir === '/tmp')) { %> +
-                    "<button type='button' onclick=\"delFile('"+field.Name+"','"+i+"')\" id='delete-"+i+"' class='btn btn-default btn-delete btn-sm'><span class='glyphicon glyphicon-remove'></span>" + "<% if (lan == 'eng') { %> Delete <% } else { %> 删除<% } %>" + "</button></td>" <% } %> +
-                    //"<td><span>尚未导入</span></td>" +
-                    '<td><div class="progress"><div id="progress-bar'+i+'" class="progress-bar" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100"></div></div></td>'+
-                    "</tr>"
-                );
-                pbar(i,field.Name);
-                //variant(i,field.Name);
+    function LoadFiles(keyword)
+    {
+        if(keyword == undefined)
+        {
+            var dir = '/files';
+            var username = '<%-userName%>';
+            $.getJSON(dir, function(result) {
+                $("#fileList").html("");
+                $.each(result, function(i, field) {
+                    if(field.IsDirectory == true)
+                    {
+                        $("#fileList").prepend(
+                            "<tr class='sortable'>"+
+                            "<td><span class='fa fa-flask' aria-hidden='true'></span></td>" +
+                            "<td>"+field.Name+"</td>" +
+                            "<td>"+field.fileNum+"</td>" +
+                            "<td>"+field.Time+"</td>" +
+                            "<td>"+
+                            "<button type='button' class='btn btn-default btn-sm' onclick='openStudy(\""+field.Name+"\")'><span class='glyphicon glyphicon-folder-open'></span>" + "<% if (lan == 'eng') { %> Open <% } else { %> 打开<% } %>" + "</button>"+
+                            "<button type='button' class='btn btn-default btn-sm' onclick='studyDelete(\""+field.Name+"\",\""+field.fileNum+"\")'><span class='glyphicon glyphicon-remove'></span>" + "<% if (lan == 'eng') { %> Delete <% } else { %> 删除<% } %>" + "</button></td>" +
+                            //"<td><span>尚未导入</span></td>" +
+                            "<td></td>"+
+                            "</tr>"
+                        );
+                    }
+                    else
+                    {
+                        $("#fileList").append(
+                            "<tr class='sortable'>"+
+                            "<td><span class='glyphicon glyphicon-file'></span></td>" +
+                            "<td id=\"file"+i+"\">"+field.Name+"</td>" +
+                            "<td>"+(field.Size/1048576).toFixed(2)+" MB"+"</td>" +
+                            "<td id=\"variants"+i+"\">0</td>" +
+                            "<td>"+field.Time+"</td>" +
+                            "<td><button type='button' onclick=\"window.location.href='/vcf_viewer?fileName="+field.Name+"'\" id='view-"+i+"' class='btn btn-default btn-sm'><span class='glyphicon glyphicon-cloud'></span>" + "<% if (lan == 'eng') { %> Analyze <% } else { %> 解析<% } %>" + "</button>" +
+                            "<button type='button' id='anno-"+ i +"' onclick=\"funTree('"+username+"','"+field.Name+"')\" class='btn btn-default btn-sm' data-toggle='modal' data-target='#annotateFileModal'><span class='glyphicon glyphicon-list-alt'></span>" + "<% if (lan == 'eng') { %> Annotate <% } else { %> 注释<% } %>"+"</button>" +
+                            "<a href='/file/"+field.Name + "'type='button' id='download-"+i+"' class='btn btn-default btn-download btn-sm'><span class='glyphicon glyphicon-download'></span>" + "<% if (lan == 'eng') { %> Download <% } else { %> 下载<% } %>" + "</a>" <% if (userName !== '' ||(userName === '' && currentDir === '/tmp')) { %> +
+                            "<button type='button' onclick=\"delFile('"+field.Name+"','"+i+"')\" id='delete-"+i+"' class='btn btn-default btn-delete btn-sm'><span class='glyphicon glyphicon-remove'></span>" + "<% if (lan == 'eng') { %> Delete <% } else { %> 删除<% } %>" + "</button></td>" <% } %> +
+                            //"<td><span>尚未导入</span></td>" +
+                            '<td><div class="progress"><div id="progress-bar'+i+'" class="progress-bar" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100"></div></div></td>'+
+                            "</tr>"
+                        );
+                        pbar(i,field.Name);
+                        //variant(i,field.Name);
 
-            }
-        });
+                    }
+                });
 
 
 
-            //funTree(username,field.Name)
+                //funTree(username,field.Name)
 
-    });
+            });
+        }
+        else
+        {
+            var dir = '/files'+'?keyword='+keyword;
+            var username = '<%-userName%>';
+            $.getJSON(dir, function(result) {
+                $("#fileList").html("");
+                $.each(result, function(i, field) {
+                    if(field.IsDirectory == true)
+                    {
+                        $("#fileList").prepend(
+                            "<tr class='sortable'>"+
+                            "<td><span class='fa fa-flask' aria-hidden='true'></span></td>" +
+                            "<td>"+field.Name+"</td>" +
+                            "<td><a href='javascript:void(0)' onclick='openStudy(\""+field.studyName+"\")'>"+field.studyName+"</a></td>" +
+                            "<td>"+field.Time+"</td>" +
+                            "<td>"+
+                            "<button type='button' class='btn btn-default btn-sm' onclick='openStudy(\""+field.Name+"\")'><span class='glyphicon glyphicon-folder-open'></span>" + "<% if (lan == 'eng') { %> Open <% } else { %> 打开<% } %>" + "</button>"+
+                            "<td></td>"+
+                            "</tr>"
+                        );
+                    }
+                    else
+                    {
+                        $("#fileList").prepend(
+                            "<tr class='sortable'>"+
+                            "<td><span class='glyphicon glyphicon-file' aria-hidden='true'></span></td>" +
+                            "<td>"+field.Name+"</td>" +
+                            "<td><a href='javascript:void(0)' onclick='openStudy(\""+field.studyName+"\")'>"+field.studyName+"</a></td>" +
+                            "<td>"+field.Time+"</td>" +
+                            "<td><button type='button' onclick=\"window.location.href='/vcf_viewer?fileName="+field.Name+"&sn="+field.studyName+"'\" id='view-"+i+"' class='btn btn-default btn-sm'><span class='glyphicon glyphicon-cloud'></span>" + "<% if (lan == 'eng') { %> Analyze <% } else { %> 解析<% } %>" + "</button>"+
+                            '<td><div class="progress"><div id="progress-bar'+i+'" class="progress-bar" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100"></div></div></td>'+
+                            "</tr>"
+                        );
+                        pbar(i,field.Name,field.studyName);
+
+                    }
+                });
+
+
+
+
+                //funTree(username,field.Name)
+
+            });
+        }
+
+    }
+    $(document).ready(LoadFiles());
 
 </script>
 
@@ -760,7 +887,7 @@
 
 
 <script>
-    function pbar(i,filename){
+    function pbar(i,filename,sn){
 
         var progressbar = $('#progress-bar'+i);
         var username = '<%-userName%>';
@@ -778,7 +905,7 @@
             var api = '/monitorStat';
             $.ajax({
                 url: api,
-                data: {fileName:filename,prog:'Import2DB'},
+                data: {fileName:filename,prog:'Import2DB',sn:sn},
                 type: 'GET',
                 dataType: 'json',
                 timeout:30000,
@@ -815,6 +942,7 @@
                     if(data.status == 'None')
                     {
                         $('#delete-'+i).removeAttr("disabled");
+                        window.clearInterval(timerId);
                     }
                     progressbar.text(data.status);
                     progressbar.width(data.percent+'%');

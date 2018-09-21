@@ -12,6 +12,7 @@ var fs = require('fs');
 var http = require('request-promise-json');
 var curDir = process.cwd();
 var path = require('path');
+    var find = require('find');
 var pageSize = 16;
 var argv = require('yargs');
 var URI = require('urijs');
@@ -20,7 +21,7 @@ var pako = require('pako');
 var vcfpath = '/data/users/';
 //var vcfpath = curDir+'/cloud/';
 var hostname = "http://localhost/cgi-bin/VCF-Server/";
-//var hostname = "https://www.diseasegps.org/cgi-bin/MDPA/";
+//var hostname = "http://45.77.181.209:8000/cgi-bin/VCF-Server/";
 
 /**
  * Construct an array of [ 1, 2, ..., n ]
@@ -287,6 +288,15 @@ module.exports = {
         {
             filter = '{}';
         }
+        else
+        {
+            filter = filter.trim();
+        }
+        var sn = req.param("sn");
+        if(sn != undefined)
+        {
+            req.session.currentDir = '/'+sn.trim();
+        }
         res.locals.view = "vcf_viewer";
         res.locals.navMod = 0;
         res.locals.fileName = fileName;
@@ -372,7 +382,7 @@ module.exports = {
             currentDir = '/';
         }
         var userName = req.session.userName;
-
+        var keyword = req.param("keyword");
         if(typeof userName === 'undefined'||userName === '')
         {
             var data = [];
@@ -419,6 +429,7 @@ module.exports = {
                 );
                 data.push({ Name : 'example', fileNum : fileNum, IsDirectory: true, Time: fs.statSync(path.join(currentDir,'example')).mtime.toLocaleString()});
                 res.json(data);
+
             }
             else
             {
@@ -440,36 +451,36 @@ module.exports = {
 
                         try
                         {
-                           if(! /^\./.test(file))
-                           {
-                               var isDirectory = fs.statSync(path.join(currentDir,file)).isDirectory();
+                            if(! /^\./.test(file))
+                            {
+                                var isDirectory = fs.statSync(path.join(currentDir,file)).isDirectory();
                                 if(isDirectory)
-                                 {
-                                     var fileNum = 0;
-                                     fs.readdirSync(path.join(currentDir,file)).forEach(
-                                         function(fn)
-                                         {
-                                             try
-                                             {
-                                                 if(! /^\./.test(fn))
-                                                 {
-                                                     fileNum += 1;
-                                                 }
-                                             }
-                                             catch(e)
-                                             {
-                                                 console.log(e);
-                                             }
+                                {
+                                    var fileNum = 0;
+                                    fs.readdirSync(path.join(currentDir,file)).forEach(
+                                        function(fn)
+                                        {
+                                            try
+                                            {
+                                                if(! /^\./.test(fn))
+                                                {
+                                                    fileNum += 1;
+                                                }
+                                            }
+                                            catch(e)
+                                            {
+                                                console.log(e);
+                                            }
 
-                                         }
-                                     );
-                                     data.push({ Name : file, fileNum : fileNum, IsDirectory: true, Time: fs.statSync(path.join(currentDir,file)).mtime.toLocaleString() });
-                                 }
-                                  else
-                                 {
-                                     data.push({ Name : file,Size: fs.statSync(path.join(currentDir,file)).size, IsDirectory: false, Time: fs.statSync(path.join(currentDir,file)).mtime.toLocaleString() });
-                                 }
-                           }
+                                        }
+                                    );
+                                    data.push({ Name : file, fileNum : fileNum, IsDirectory: true, Time: fs.statSync(path.join(currentDir,file)).mtime.toLocaleString() });
+                                }
+                                else
+                                {
+                                    data.push({ Name : file,Size: fs.statSync(path.join(currentDir,file)).size, IsDirectory: false, Time: fs.statSync(path.join(currentDir,file)).mtime.toLocaleString() });
+                                }
+                            }
                         }
                         catch(e)
                         {
@@ -486,57 +497,91 @@ module.exports = {
         else
         {
             currentDir = vcfpath+ userName + currentDir;
-            fs.readdir(currentDir, function (err, files) {
-                if (err)
-                {
-                    throw err;
-                }
-                var data = [];
-                files.forEach(function (file) {
-
-                    try
+            if(keyword == undefined)
+            {
+                fs.readdir(currentDir, function (err, files) {
+                    if (err)
                     {
-                        if(! /^\./.test(file))
+                        throw err;
+                    }
+                    var data = [];
+                    files.forEach(function (file) {
+
+                        try
                         {
-                            var isDirectory = fs.statSync(path.join(currentDir,file)).isDirectory();
-                            if (isDirectory)
+                            if(! /^\./.test(file))
                             {
-                                var fileNum = 0;
-                                fs.readdirSync(path.join(currentDir,file)).forEach(
-                                    function(fn)
-                                    {
-                                        try
+                                var isDirectory = fs.statSync(path.join(currentDir,file)).isDirectory();
+                                if (isDirectory)
+                                {
+                                    var fileNum = 0;
+                                    fs.readdirSync(path.join(currentDir,file)).forEach(
+                                        function(fn)
                                         {
-                                            if(! /^\./.test(fn))
+                                            try
                                             {
-                                                fileNum += 1;
+                                                if(! /^\./.test(fn))
+                                                {
+                                                    fileNum += 1;
+                                                }
                                             }
-                                        }
-                                        catch(e)
-                                        {
-                                            console.log(e);
-                                        }
+                                            catch(e)
+                                            {
+                                                console.log(e);
+                                            }
 
-                                    }
-                                );
-                                data.push({ Name : file, fileNum : fileNum, IsDirectory: true, Time: fs.statSync(path.join(currentDir,file)).mtime.toLocaleString() });
+                                        }
+                                    );
+                                    data.push({ Name : file, fileNum : fileNum, IsDirectory: true, Time: fs.statSync(path.join(currentDir,file)).mtime.toLocaleString() });
+                                }
+                                else
+                                {
+                                    data.push({ Name : file,Size: fs.statSync(path.join(currentDir,file)).size, IsDirectory: false, Time: fs.statSync(path.join(currentDir,file)).mtime.toLocaleString() });
+                                }
                             }
-                            else
-                            {
-                                data.push({ Name : file,Size: fs.statSync(path.join(currentDir,file)).size, IsDirectory: false, Time: fs.statSync(path.join(currentDir,file)).mtime.toLocaleString() });
-                            }
+
                         }
+                        catch(e)
+                        {
+                            console.log(e);
+                        }
+                    });
 
-                    }
-                    catch(e)
-                    {
-                        console.log(e);
-                    }
+                    data = _.sortBy(data, function(f) { return f.Name; });
+                    res.json(data);
                 });
+            }
+            else
+            {
+                keyword = keyword.trim();
+                var pattern = new RegExp('^.*'+keyword+'.*$',"i");
+                var data = [];
+                find.eachfile(pattern, currentDir, function(file) {
+                    if(!/[\\\/]\./.test(file))
+                    {
+                        var item = file.split(/[\\\/]/);
+                        var fn = item[item.length-1];
+                        var sn = item[item.length-2];
+                        data.push({ Name:fn, studyName:sn,IsDirectory: false, Time: fs.statSync(file).mtime.toLocaleString() });
+                    }
 
-                data = _.sortBy(data, function(f) { return f.Name; });
-                res.json(data);
-            });
+                }).end(
+                    find.eachdir(pattern, currentDir, function(dir) {
+                        if(!/[\\\/]\./.test(dir))
+                        {
+                            var item = dir.split(/[\\\/]/);
+                            var fn = item[item.length-1];
+                            var sn = item[item.length-1];
+                            data.push({ Name :fn,studyName:sn, IsDirectory: true, Time: fs.statSync(dir).mtime.toLocaleString()});
+                        }
+                    }).end(
+                        function(){
+                            data = _.sortBy(data, function(f) { return f.studyName; });
+                            res.json(data);
+                        })
+                );
+            }
+
         }
 
       //console.log("browsing", currentDir);
@@ -951,16 +996,25 @@ module.exports = {
 
         var fileName = req.param("fileName").trim();
         var prog = req.param("prog").trim();
-        var url = new URI(hostname+"proc/Monitor.cgi")
+        var sn = req.param("sn");
+        var queryDir = currentDir;
+        if(sn != undefined )
+        {
+            queryDir = '/'+sn.trim();
+        }
+
+        var url = new URI("https://www.diseasegps.org/cgi-bin/MDPA/proc/Monitor.cgi")
             .query({user:userName,
-                    filename: fileName,
-                    dir:currentDir,
-                    prog:prog
-                });
+                filename: fileName,
+                dir:queryDir,
+                prog:prog
+            });
+
         http('get', url.toString()).then(function (result)
         {
             res.json(result);
         });
+
     },
     tableHeader: function (req, res) {
         var userName = req.session.userName;
