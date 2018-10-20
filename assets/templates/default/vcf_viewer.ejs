@@ -756,12 +756,14 @@
 
                 var divContainer = document.getElementById("showData");
                 divContainer.innerHTML = '';
-                $("#toolbox").append('<a href="javascript:void(0);" title="<% if (lan == "eng") { %>Columns<% } else { %>隐藏/显示列<% } %>" data-toggle=\'modal\' data-target=\'#colsModal\'><span class="fa fa-table"></span></a>');
-                $("#toolbox").append('<a href="javascript:void(0);" id="panel" title="<% if (lan == "eng") { %>Toolbox<% } else { %>工具栏<% } %>" ><span class="fa fa-briefcase"></span></a>');
+                $("#toolbox").append('<span class="toolboxTitle"><% if (lan == "eng") { %>Toolbar: <% } else { %>工具栏：<% } %></span>');
+                $("#toolbox").append('<a href="javascript:void(0);" title="<% if (lan == "eng") { %>Configure table columns<% } else { %>隐藏/显示表格列<% } %>" data-toggle=\'modal\' data-target=\'#colsModal\'><span class="toolbox fa fa-table"></span></a>');
+                $("#toolbox").append('<a href="javascript:void(0);" id="panel" title="<% if (lan == "eng") { %>Hide/Display filter panel<% } else { %>隐藏/显示筛选<% } %>" ><span class="toolbox fa fa-briefcase"></span></a>');
                 //$("#toolbox").append('<a href="#" title="<% if (lan == "eng") { %>Print<% } else { %>打印<% } %>"><span class="fa fa-print"></span></a>');
-                $("#toolbox").append('<a href="javascript:void(0);" onclick="exportCSV()" title="<% if (lan == "eng") { %>Export<% } else { %>导出<% } %>"><span class="fa fa-download"></span></a>');
-                $("#toolbox").append('<a href="javascript:void(0);" title="<% if (lan == "eng") { %>Configure<% } else { %>配置<% } %>" data-toggle=\'modal\' data-target=\'#configModal\'><span class="fa fa-cog"></span></a>');
+                $("#toolbox").append('<a href="javascript:void(0);" onclick="exportCSV()" title="<% if (lan == "eng") { %>Export variants<% } else { %>导出位点<% } %>"><span class="toolbox fa fa-download"></span></a>');
+                $("#toolbox").append('<a href="javascript:void(0);" title="<% if (lan == "eng") { %>Configure index<% } else { %>配置索引<% } %>" data-toggle=\'modal\' data-target=\'#configModal\'><span class="toolbox fa fa-cog"></span></a>');
                 divContainer.appendChild(table);
+
 
                 var tab = $('#vcf').DataTable({
                     "scrollX": true,

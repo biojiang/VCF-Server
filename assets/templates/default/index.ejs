@@ -171,7 +171,11 @@
         <% if (userName != '') {%>
         <div>
             <div class="col-sm-3 search-div">
-                <input type="text" id="file-searchInput" name="" value="" class="form-control" autocomplete="off" >
+                <%if (lan == 'eng') { %>
+                <input type="text" id="file-searchInput" placeholder="Search projects or VCF files" class="form-control" autocomplete="off" >
+                <%}else{%>
+                <input type="text" id="file-searchInput" placeholder="搜索项目或VCF文件" class="form-control" autocomplete="off" >
+                <%}%>
             </div>
             <button id="file-search" onclick="searchFile()" class="btn btn-default">
                 <i class="glyphicon glyphicon-search"></i>
@@ -192,7 +196,11 @@
         <span class="glyphicon glyphicon-home"></span>
         <li><a href="javascript:void(0)" onclick="closeStudy()"><%if(userName == ''){%>public<%}else{%> <%-userName%> <%}%></a> <%-currentDir%></li>
     </ol>
-    <div id="errMsg"><% if(userName == '' && currentDir == '/tmp'){if (lan == 'eng') { %> <h4 class="text-danger">Notice: VCF files in this folder will be <strong><u>deleted</u></strong> after close, please download/export them to local disk on time. </h4><% } else { %><h4 class="text-danger">注意：该目录下的VCF文件在浏览器退出后将被<strong><u>清除</u></strong>，请及时导出到本地！</h4><% }} %></div>
+    <div id="errMsg">
+        <%if(study == 0){if (lan == 'eng') { %> <h4 class="text-danger">Notice: Please open the project fold to upload and analyze VCF files!</h4><% } else { %><h4 class="text-danger">注意：请进入项目目录进行VCF文件上传和分析！</h4><% }}%>
+        <%if(userName == '' && currentDir == '/example'){if (lan == 'eng') { %> <h4 class="text-danger">Notice: For unsigned users, please upload your VCF files to tmp project!</h4><% } else { %><h4 class="text-danger">注意：未登录用户请将VCF上传至tmp项目中！</h4><% }}%>
+        <% if(userName == '' && currentDir == '/tmp'){if (lan == 'eng') { %> <h4 class="text-danger">Notice: VCF files in this folder will be <strong><u>deleted</u></strong> after close the browser, please download/export them to local disk on time. </h4><% } else { %><h4 class="text-danger">注意：该目录下的VCF文件在浏览器退出后将被<strong><u>清除</u></strong>，请及时导出到本地！</h4><% }} %>
+    </div>
     <table class="table table-hover table-striped">
         <thead>
         <tr class="sortable" id="fileTableTr">

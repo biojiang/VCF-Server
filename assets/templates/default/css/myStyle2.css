@@ -232,4 +232,6 @@
   z-index: 1;
 }
 
-
+.toolboxTitle{ font-weight:bold;
+  font-size:18px
+}
