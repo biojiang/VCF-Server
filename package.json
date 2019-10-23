@@ -26,7 +26,7 @@
     "nodemailer": "2.3.0",
     "pnglib": "0.0.1",
     "request-promise-json": "^1.0.4",
-    "sails": "^0.11.2",
+    "sails": "^1.2.3",
     "sails-mysql": "^0.11.3",
     "urijs": "^1.19.0",
     "yargs": "^9.0.1",
